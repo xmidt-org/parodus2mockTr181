@@ -1,0 +1,9 @@
+{
+	"EnablePa": "true",
+	"file-version": 1,
+	"ServerIP": "fabric.webpa.comcast.net",
+	"ServerPort": 8080,
+	"DeviceNetworkInterface": "erouter0",
+	"RetryIntervalInSec": 10,
+	"MaxPingWaitTimeInSec": 180
+}

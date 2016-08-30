@@ -1,0 +1,9 @@
+SUBDIRS = 
+lib_LTLIBRARIES = libwebpacore.la
+libwebpacore_la_SOURCES = websocket_mgr.c
+libwebpacore_la_SOURCES += wrp_mgr.c
+libwebpacore_la_LDFLAGS = -lcjson -lmsgpack -lnopoll
+include_HEADERS = $(top_srcdir)/include/*.h $(top_srcdir)/../../include/*.h
+AM_CFLAGS = -I${PKG_CONFIG_SYSROOT_DIR}/$(includedir)/nopoll -I$(top_srcdir)/include -I$(top_srcdir)/../../include
+CFLAGS += "-DNOPOLL_LOGGER"
+#AM_CFLAGS = -I${includedir}/nopoll
