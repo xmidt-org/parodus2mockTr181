@@ -1,0 +1,12 @@
+[Unit]
+Description=webpa video Daemon
+After=tr69hostif.service
+
+[Service]
+EnvironmentFile=/etc/device.properties
+ExecStart=/bin/sh -c 'source /lib/rdk/opt-override.sh;/usr/bin/webpavideo --debugconfig $DEBUGINIFILE'
+ExecStop=/bin/kill -15 $MAINPID
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
