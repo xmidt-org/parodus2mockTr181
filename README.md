@@ -1,6 +1,6 @@
-# mockCcsp
+# parodus2mockTr181
 
-Simple interface to mock RDK CcspCommonLibrary
+Simple interface provide a mock TR-181 object model
 
 # Building and Testing Instructions
 
