@@ -24,19 +24,19 @@ add_library(${PROJ_MOCK_TR181}.shared SHARED ${HEADERS} ${SOURCES})
 set_target_properties(${PROJ_MOCK_TR181}.shared PROPERTIES OUTPUT_NAME ${PROJ_MOCK_TR181})
 
 target_link_libraries (${PROJ_MOCK_TR181}
-    ${CMAKE_THREAD_LIBS_INIT}
-    -lwrp-c
-    -lwdmp-c
-    -lmsgpackc
-    -ltrower-base64
-    -lm
-    -lcimplog
-    -lnanomsg
-    -lcjson
-    -lpthread
-    -llibparodus
-    -lrt
-    )
+                       ${CMAKE_THREAD_LIBS_INIT}
+                       -lwrp-c
+                       -lwdmp-c
+                       -lmsgpackc
+                       -ltrower-base64
+                       -lm
+                       -lcimplog
+                       -lnanomsg
+                       -lcjson
+                       -lpthread
+                       -llibparodus
+                       -lrt
+                       )
     
 install (TARGETS ${PROJ_MOCK_TR181} DESTINATION bin)
 install (TARGETS ${PROJ_MOCK_TR181} DESTINATION lib${LIB_SUFFIX})

@@ -31,6 +31,8 @@ set(LIBRARY_DIR ${INSTALL_DIR}/lib${LIB_SUFFIX})
 set(LIBRARY_DIR64 ${INSTALL_DIR}/lib64)
 set(COMMON_LIBRARY_DIR ${INSTALL_DIR}/lib/${CMAKE_LIBRARY_ARCHITECTURE})
 
+# Includes
+#--------------------------------------------------------------------------------
 include_directories(${INCLUDE_DIR}
                     ${INCLUDE_DIR}/cjson
                     ${INCLUDE_DIR}/msgpack

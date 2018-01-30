@@ -23,7 +23,7 @@ int main()
     startParodusReceiveThread();
     sleep(5);
 
-    while(1)
+    while(1)  //start startParodusReceiveThread and wait...
     {
         sleep(10);
     }

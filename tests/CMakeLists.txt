@@ -22,20 +22,20 @@ link_directories ( ${LIBRARY_DIR} )
 
 add_executable(simple simple.c ../src/mock_tr181_client.c ../src/mock_tr181_adapter.c)
 
-target_link_libraries (simple  gcov
-                               cunit
-                               ${CMAKE_THREAD_LIBS_INIT}
-                              -lwrp-c
-                              -lwdmp-c
-                              -lmsgpackc
-                              -ltrower-base64
-                              -lm
-                              -lcimplog
-                              -lnanomsg
-                              -lcjson
-                              -lpthread
-                              -llibparodus
-                              -lrt )
+target_link_libraries (simple  gcov  cunit
+                       ${CMAKE_THREAD_LIBS_INIT}
+                       -lwrp-c
+                       -lwdmp-c
+                       -lmsgpackc
+                       -ltrower-base64
+                       -lm
+                       -lcimplog
+                       -lnanomsg
+                       -lcjson
+                       -lpthread
+                       -llibparodus
+                       -lrt 
+                       )
 
 add_custom_target(coverage
                   COMMAND lcov -q --capture --directory ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/simple.dir/__/src --output-file coverage.info

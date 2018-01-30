@@ -19,8 +19,12 @@
 #include "mock_tr181_adapter.h"
 
 /*----------------------------------------------------------------------------*/
-/*                              functions                             */
+/*                 External interface functions                               */
 /*----------------------------------------------------------------------------*/
+/*
+ * returns 0 - failure
+ *         1 - success
+ */
 
 int readFromDB(char **data)
 {
@@ -42,7 +46,10 @@ int readFromDB(char **data)
 	return 1;
 }
 
-
+/*
+ * returns 0 - failure
+ *         1 - success
+ */
 int writeToDB(char *data)
 {
     FILE *fp;

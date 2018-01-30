@@ -17,10 +17,10 @@
 #ifndef __MOCK_TR181_CLIENT_H__
 #define __MOCK_TR181_CLIENT_H__
 
+#include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
 
-#include <stdio.h>
 #include "libparodus.h"
 #include <nanomsg/nn.h>
 #include <nanomsg/pipeline.h>

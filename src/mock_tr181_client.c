@@ -15,8 +15,8 @@
  *
  */
 
-#include <stdbool.h>
-#include <stdint.h>
+//#include <stdbool.h>
+//#include <stdint.h>
 
 #include "mock_tr181_client.h"
 #include "mock_tr181_adapter.h"
