@@ -20,7 +20,7 @@ set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fprofile-arcs -ftest-cov
 
 link_directories ( ${LIBRARY_DIR} )
 
-add_executable(simple simple.c ../src/ccsp.c)
+add_executable(simple simple.c ../src/mock_tr181_client.c)
 
 target_link_libraries (simple  gcov
                                cunit
