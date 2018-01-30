@@ -17,10 +17,28 @@ set(PROJ_MOCK_TR181 mock_tr181)
 file(GLOB HEADERS mock_tr181_adapter.h mock_tr181_client.h)
 set(SOURCES mock_tr181_adapter.c mock_tr181_client.c mock_tr181_main.c)
 
+add_executable(${PROJ_MOCK_TR181} ${SOURCES})
+
 add_library(${PROJ_MOCK_TR181} STATIC ${HEADERS} ${SOURCES})
 add_library(${PROJ_MOCK_TR181}.shared SHARED ${HEADERS} ${SOURCES})
 set_target_properties(${PROJ_MOCK_TR181}.shared PROPERTIES OUTPUT_NAME ${PROJ_MOCK_TR181})
 
+target_link_libraries (${PROJ_MOCK_TR181}
+    ${CMAKE_THREAD_LIBS_INIT}
+    -lwrp-c
+    -lwdmp-c
+    -lmsgpackc
+    -ltrower-base64
+    -lm
+    -lcimplog
+    -lnanomsg
+    -lcjson
+    -lpthread
+    -llibparodus
+    -lrt
+    )
+    
+install (TARGETS ${PROJ_MOCK_TR181} DESTINATION bin)
 install (TARGETS ${PROJ_MOCK_TR181} DESTINATION lib${LIB_SUFFIX})
 install (TARGETS ${PROJ_MOCK_TR181}.shared DESTINATION lib${LIB_SUFFIX})
-install (FILES ccsp.h DESTINATION include/${PROJ_MOCK_TR181})
+install (FILES mock_tr181_adapter.h mock_tr181_client.h DESTINATION include/${PROJ_MOCK_TR181})
