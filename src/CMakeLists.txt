@@ -19,7 +19,7 @@ set(SOURCES mock_tr181_adapter.c mock_tr181_client.c mock_tr181_main.c)
 
 add_executable(${PROJ_MOCK_TR181} ${SOURCES})
 
-add_library(${PROJ_MOCK_TR181} STATIC ${HEADERS} ${SOURCES})
+add_library(lib${PROJ_MOCK_TR181} STATIC ${HEADERS} ${SOURCES})
 add_library(${PROJ_MOCK_TR181}.shared SHARED ${HEADERS} ${SOURCES})
 set_target_properties(${PROJ_MOCK_TR181}.shared PROPERTIES OUTPUT_NAME ${PROJ_MOCK_TR181})
 
