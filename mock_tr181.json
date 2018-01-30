@@ -1,0 +1,22 @@
+[{
+        "name":   "Device.Webpa.Version",
+        "value":  "123",
+        "type":   0
+   }, {
+        "name":   "Device.Hosts.Host.1.Name",
+        "value":  "TestHostName1",
+        "type":   0
+   }, {
+        "name":   "Device.Hosts.Host.1.MAC",
+        "value":  "56:12:34:78:ab:48",
+        "type":   0 
+   }, {
+        "name":   "Device.Hosts.Host.2.Name",
+        "value":  "TestHostName1",
+        "type":   0
+   }, {
+        "name":   "Device.Hosts.Host.2.MAC",
+        "value":  "56:12:34:78:ab:48",
+        "type":   0
+}] 
+

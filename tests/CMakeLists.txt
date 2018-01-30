@@ -1,4 +1,4 @@
-#   Copyright 2016 Comcast Cable Communications Management, LLC
+#   Copyright 2018 Comcast Cable Communications Management, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -20,12 +20,22 @@ set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fprofile-arcs -ftest-cov
 
 link_directories ( ${LIBRARY_DIR} )
 
-add_executable(simple simple.c ../src/ccsp.c)
+add_executable(simple simple.c ../src/mock_tr181_client.c ../src/mock_tr181_adapter.c)
 
-target_link_libraries (simple  gcov
-                               cunit
-                              -lcjson
-                              -lcimplog)
+target_link_libraries (simple  gcov  cunit
+                       ${CMAKE_THREAD_LIBS_INIT}
+                       -lwrp-c
+                       -lwdmp-c
+                       -lmsgpackc
+                       -ltrower-base64
+                       -lm
+                       -lcimplog
+                       -lnanomsg
+                       -lcjson
+                       -lpthread
+                       -llibparodus
+                       -lrt 
+                       )
 
 add_custom_target(coverage
                   COMMAND lcov -q --capture --directory ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/simple.dir/__/src --output-file coverage.info

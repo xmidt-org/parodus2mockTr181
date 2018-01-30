@@ -1,5 +1,5 @@
 /**
- * Copyright 2016 Comcast Cable Communications Management, LLC
+ * Copyright 2018 Comcast Cable Communications Management, LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,36 @@
  * limitations under the License.
  *
  */
-#ifndef __CCSP_H__
-#define __CCSP_H__
+#ifndef __MOCK_TR181_CLIENT_H__
+#define __MOCK_TR181_CLIENT_H__
 
+#include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
+
+#include "libparodus.h"
+#include <nanomsg/nn.h>
+#include <nanomsg/pipeline.h>
+#include <pthread.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <unistd.h>
+#include "wrp-c.h"
+#include "wdmp-c.h"
+#include "cJSON.h"
+#include <string.h>
+#include <cimplog.h>
+
 
 /*----------------------------------------------------------------------------*/
 /*                                   Macros                                   */
 /*----------------------------------------------------------------------------*/
-/* none */
+#define CONTENT_TYPE_JSON  "application/json"
+
+#define LOGGING_MODULE     "MOCK_TR181"
+#define Error(...)      cimplog_error(LOGGING_MODULE, __VA_ARGS__)
+#define Info(...)       cimplog_info(LOGGING_MODULE, __VA_ARGS__)
+#define Print(...)      cimplog_debug(LOGGING_MODULE, __VA_ARGS__)
 
 /*----------------------------------------------------------------------------*/
 /*                               Data Structures                              */
@@ -38,7 +58,8 @@
 /*----------------------------------------------------------------------------*/
 /*                             Function Prototypes                            */
 /*----------------------------------------------------------------------------*/
-/* none */
+void connect_parodus();
+void startParodusReceiveThread();
 
 /*----------------------------------------------------------------------------*/
 /*                             External Functions                             */
@@ -50,4 +71,4 @@
 /*----------------------------------------------------------------------------*/
 /* none */
 
-#endif
+#endif /* __MOCK_TR181_CLIENT_H__ */
