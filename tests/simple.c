@@ -20,7 +20,7 @@
 #include <CUnit/Basic.h>
 #include <stdbool.h>
 
-#include "../src/ccsp.h"
+#include "../src/mock_tr181_client.h"
 
 void test_1()
 {
@@ -29,7 +29,7 @@ void test_1()
 
 void add_suites( CU_pSuite *suite )
 {
-    *suite = CU_add_suite( "mockCcsp encoding tests", NULL, NULL );
+    *suite = CU_add_suite( "mock_tr181 encoding tests", NULL, NULL );
     CU_add_test( *suite, "Test 1", test_1 );
 }
 
