@@ -35,7 +35,7 @@ libpd_instance_t mock_tr181_instance;
 typedef struct
 {
 	param_t p;
-	param_t_list* next;
+	struct param_t_list* next;
 } param_t_list;
 
 /*----------------------------------------------------------------------------*/
@@ -138,7 +138,7 @@ static void processRequest(char *reqPayload, char **resPayload)
     res_struct *resObj = NULL;
     cJSON *obj = NULL;
     char *payload = NULL;
-    int reqParamCount = 0, resParamCount = 0, i = 0, count = 0, j = 0, k = 0;
+    int reqParamCount = 0, resParamCount = 0, i = 0, matchFlag = 0, count = 0, j = 0, k = 0;
     WDMP_STATUS ret = WDMP_SUCCESS;
 
     /* Parse Request Payload.
@@ -211,7 +211,7 @@ static void processRequest(char *reqPayload, char **resPayload)
 
             //Ok. We took care of res_struct. Now allocate the union within the struct
             resObj->u.getRes = (get_res_t *) malloc(sizeof(get_res_t));
-            if(resObj->getRes)
+            if(resObj->u.getRes)
             {
             		memset(resObj->u.getRes, 0, sizeof(get_res_t));
             }
