@@ -36,7 +36,7 @@ typedef struct param_t_list
 {
 	param_t p;
 	struct param_t_list* next;
-};
+}_param_t_list;
 
 /*----------------------------------------------------------------------------*/
 /*                             Internal Functions                             */
