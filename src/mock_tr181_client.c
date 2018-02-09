@@ -32,18 +32,18 @@
 /*----------------------------------------------------------------------------*/
 libpd_instance_t mock_tr181_instance;
 
-struct param_t_list
+typedef struct
 {
 	param_t p;
-	struct param_t_list* next;
-};
+	param_t_list* next;
+} param_t_list;
 
 /*----------------------------------------------------------------------------*/
 /*                             Internal Functions                             */
 /*----------------------------------------------------------------------------*/
 void *parodus_receive_wait();
 
-static void free_param_t_list(struct param_t_list* pList)
+static void free_param_t_list(param_t_list* pList)
 {
 	while (pList)
 	{
@@ -252,7 +252,7 @@ static void processRequest(char *reqPayload, char **resPayload)
             		{
             			/* Wildcard query */
             			/* look for all params matching the wildcard */
-            			struct param_t_list* pList = NULL, *pLast = NULL;
+            			param_t_list* pList = NULL, *pLast = NULL;
 
             			count = cJSON_GetArraySize(paramList);
 					for (j = 0; j < count; j++)
@@ -264,7 +264,7 @@ static void processRequest(char *reqPayload, char **resPayload)
 							{
 								retParamCnt++;
 								//add to a tmp list
-								struct param_t_list *tmp = (struct param_t_list*)malloc(sizeof(struct param_t_list));
+								param_t_list *tmp = (param_t_list*)malloc(sizeof(param_t_list));
 								if(tmp)
 								{
 									tmp->p.name = strdup(cJSON_GetObjectItem(obj, "name")->valuestring);
@@ -300,7 +300,7 @@ static void processRequest(char *reqPayload, char **resPayload)
 						Print("Response:> retParamCnt[%d] = %zu\n", i, resObj->u.getRes->retParamCnt[i]);
 
 						resObj->u.getRes->params[i] = (param_t *) malloc(sizeof(param_t) * retParamCnt);
-						struct param_t_list* pl = pList;
+						param_t_list* pl = pList;
 						for(k = 0; k < retParamCnt && pList != NULL; k++, pl = pl->next)
 						{
 							resObj->u.getRes->params[i][k].name = strdup(pl->p.name);
