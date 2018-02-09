@@ -8,15 +8,15 @@
         "type":   0
    }, {
         "name":   "Device.Hosts.Host.1.MAC",
-        "value":  "56:12:34:78:ab:48",
+        "value":  "ab:cd:ef:12:34:56",
         "type":   0 
    }, {
         "name":   "Device.Hosts.Host.2.Name",
-        "value":  "TestHostName1",
+        "value":  "TestHostName2",
         "type":   0
    }, {
         "name":   "Device.Hosts.Host.2.MAC",
-        "value":  "56:12:34:78:ab:48",
+        "value":  "78:90:12:ba:dc:fe",
         "type":   0
 }] 
 
