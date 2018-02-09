@@ -32,11 +32,11 @@
 /*----------------------------------------------------------------------------*/
 libpd_instance_t mock_tr181_instance;
 
-typedef struct
+typedef struct param_t_list
 {
 	param_t p;
 	param_t_list* next;
-} param_t_list;
+};
 
 /*----------------------------------------------------------------------------*/
 /*                             Internal Functions                             */
