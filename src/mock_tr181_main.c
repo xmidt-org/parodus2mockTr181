@@ -19,13 +19,13 @@
 
 int main()
 {
-    connect_parodus();
-    startParodusReceiveThread();
-    sleep(5);
+	connect_parodus();
+	startParodusReceiveThread();
+	sleep(5);
 
-    while(1)  //start startParodusReceiveThread and wait...
-    {
-        sleep(10);
-    }
-    return 0;	
+	while (1)  //start startParodusReceiveThread and wait...
+	{
+		sleep(10);
+	}
+	return 0;
 }
