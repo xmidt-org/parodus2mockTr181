@@ -35,7 +35,7 @@ libpd_instance_t mock_tr181_instance;
 typedef struct
 {
 	param_t p;
-	struct param_t_list* next;
+	param_t_list* next;
 } param_t_list;
 
 /*----------------------------------------------------------------------------*/
