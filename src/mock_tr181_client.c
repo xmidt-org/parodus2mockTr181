@@ -17,12 +17,14 @@
 
 //#include <stdbool.h>
 //#include <stdint.h>
+
 #include "mock_tr181_client.h"
 #include "mock_tr181_adapter.h"
 
 /*----------------------------------------------------------------------------*/
 /*                                   Macros                                   */
 /*----------------------------------------------------------------------------*/
+
 // Limit for total number of wild card matched params in the Response
 #define MAX_WILDCARD_PARAMS 100
 
