@@ -28,20 +28,30 @@
 
 int readFromDB(char **data)
 {
-    FILE *fp;
-    int ch_count = 0;
-    fp = fopen(DB_FILE, "r");
-    if (fp == NULL)
-    {
-        Error("Failed to open file %s\n", DB_FILE);
-        return 0;
-    }
-    fseek(fp, 0, SEEK_END);
-	ch_count = ftell(fp);
-	fseek(fp, 0, SEEK_SET);
-	*data = (char *) malloc(sizeof(char) * (ch_count + 1));
-	fread(*data, 1, ch_count,fp);
-	(*data)[ch_count] ='\0';
+	FILE *fp;
+	int ch_count = 0;
+	fp = fopen(DB_FILE, "r");
+	if (fp == NULL)
+	{
+		Error("Failed to open file %s\n", DB_FILE);
+		return 0;
+	}
+	fseek(fp, 0, SEEK_END);  //set file position to end
+	ch_count = ftell(fp);    // get the file position
+	fseek(fp, 0, SEEK_SET);  //set file position to start
+
+	*data = (char *) malloc(sizeof(char) * (ch_count + 1)); //allocate memory for file size
+	if (*data != NULL)
+	{
+		fread(*data, 1, ch_count, fp);  // copy file to memory
+		(*data)[ch_count] = '\0';
+	}
+	else
+	{
+		Error("Failed to allocate memory of %d bytes\n", ch_count);
+		return 0;
+	}
+
 	fclose(fp);
 	return 1;
 }
@@ -52,14 +62,14 @@ int readFromDB(char **data)
  */
 int writeToDB(char *data)
 {
-    FILE *fp;
-    fp = fopen(DB_FILE, "w");
-    if (fp == NULL)
-    {
-        Error("Failed to open file %s\n", DB_FILE);
-        return 0;
-    }
-    fwrite(data, strlen(data), 1, fp);
-    fclose(fp);
-    return 1;
+	FILE *fp;
+	fp = fopen(DB_FILE, "w");
+	if (fp == NULL)
+	{
+		Error("Failed to open file %s\n", DB_FILE);
+		return 0;
+	}
+	fwrite(data, strlen(data), 1, fp);
+	fclose(fp);
+	return 1;
 }
