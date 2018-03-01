@@ -59,7 +59,7 @@ int mock_tr181_db_read(char **data)
 		fp = fopen(g_mock_tr181_db_name, "r");
 		if (fp == NULL)
 		{
-			Error("Failed to open db file \"%s\"\n", g_mock_tr181_db_name);
+			Error("Failed to open db file \"%s\" !\n", g_mock_tr181_db_name);
 			return 0;
 		}
 	}

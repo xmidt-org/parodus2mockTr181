@@ -69,6 +69,7 @@ const char *rdk_logger_module_fetch(void)
 
 void connect_parodus_default()
 {
+	Info("Using default values for Parodus PORT and Client Port.\n");
 
 	libpd_cfg_t cfg = {
 			.service_name = "config",
@@ -117,6 +118,7 @@ void connect_parodus(char* parodus_port, char* client_port)
 	}
 	else
 	{
+		Info("Using default value for Parodus PORT.\n");
 		strncpy(str_parodus_url, "tcp://127.0.0.1:6666", strlen("tcp://127.0.0.1:6666")+1);
 	}
 
@@ -126,6 +128,7 @@ void connect_parodus(char* parodus_port, char* client_port)
 	}
 	else
 	{
+		Info("Using default value for Client PORT.\n");
 		strncpy(str_client_url, "tcp://127.0.0.1:6663", strlen("tcp://127.0.0.1:6663")+1);
 	}
 
@@ -141,7 +144,7 @@ void connect_parodus(char* parodus_port, char* client_port)
 			.client_url = str_client_url
 		};
 
-	Info( "Configurations => service_name : \"%s\" parodus_url : \"%s\" client_url : \"%s\"\n",
+	Info( "Configurations => service_name : \"%s\", parodus_url : \"%s\", client_url : \"%s\"\n",
 			cfg.service_name,
 			cfg.parodus_url,
 			cfg.client_url );
