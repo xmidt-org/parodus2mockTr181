@@ -40,18 +40,23 @@ int main( int argc, char **argv)
 		switch (item)
 		{
 			case 'p':
+				Info("Option p read\n");
 				parodus_port = strdup(optarg);
 				break;
 			case 'c':
+				Info("Option c read\n");
 				client_port = strdup(optarg);
 				break;
 			case 'd':
+				Info("Option d read\n");
 				mock_tr181_db_init(optarg);
 				break;
 			case 'h':
+				Info("Option h read\n");
 				printf("Usage:%s [-p <parodus_port>] [-c <client_port>] [-d <fully_qualified_database_name>]\n", argv[0]);
-				break;
+				return 0;
 			case '?':
+				Info("Option invalid\n");
 				if (strchr(option_string, optopt))
 				{
 					printf("%s Option %c requires an argument!\n", argv[0], optopt);

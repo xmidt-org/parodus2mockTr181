@@ -37,6 +37,7 @@ int mock_tr181_db_init(char* db_name)
 
 	if(db_name)
 	{
+		Info("MockTR181 DB file: \"%s\"\n", db_name);
 		g_mock_tr181_db_name = strdup(db_name);
 	}
 	else
