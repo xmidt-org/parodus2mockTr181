@@ -76,6 +76,7 @@ int main( int argc, char **argv)
 	}
 
 	connect_parodus(parodus_port, client_port);
+
 	startParodusReceiveThread();
 	sleep(5);
 

@@ -27,9 +27,9 @@
 
 #define P2M_MOCK_PORT_NUM 6663
 
-
 // Limit for total number of wild card matched params in the Response
 #define P2M_MAX_WILDCARD_PARAMS 100
+
 
 /*----------------------------------------------------------------------------*/
 /*                            File Scoped Variables                           */
@@ -169,6 +169,7 @@ void connect_parodus(char* parodus_port, char* client_port)
 	}
 }
 
+
 void startParodusReceiveThread()
 {
 	int err = 0;
@@ -224,7 +225,9 @@ static void processRequest(char *reqPayload, char **resPayload)
 	 * get all the TR181 params from db file.
 	 * Note: db in json format
 	 */
+  
 	int status = mock_tr181_db_read(&dbData);
+
 	if (status == 1)
 	{
 		Info("Data from DB: %s\n", dbData);
@@ -597,7 +600,9 @@ static void processRequest(char *reqPayload, char **resPayload)
 
 			addData = cJSON_Print(paramList);
 			Print("addData : %s\n", addData);
+      
 			status = mock_tr181_db_write(addData);
+
 			if (status == 1)
 			{
 				Info("Data is successfully added to DB\n");
