@@ -32,7 +32,7 @@ int main( int argc, char **argv)
     };
 
     int item = 0, opt_index = 0;
-    char* parodus_port = NULL, char* client_port = NULL;
+    char* parodus_port = NULL, client_port = NULL;
 
     while( -1 != (item = getopt_long(argc, argv, option_string, options, &opt_index)) )
 	{
