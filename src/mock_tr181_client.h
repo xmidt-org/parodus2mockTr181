@@ -57,7 +57,8 @@
 /*----------------------------------------------------------------------------*/
 /*                             Function Prototypes                            */
 /*----------------------------------------------------------------------------*/
-void connect_parodus();
+void connect_parodus(char* parodus_port, char* client_port);
+void connect_parodus_default();
 void startParodusReceiveThread();
 
 /*----------------------------------------------------------------------------*/

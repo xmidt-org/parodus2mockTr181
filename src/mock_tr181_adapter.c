@@ -18,6 +18,7 @@
 #include "mock_tr181_client.h"
 #include "mock_tr181_adapter.h"
 
+static char* g_mock_tr181_db_name = NULL;
 /*----------------------------------------------------------------------------*/
 /*                 External interface functions                               */
 /*----------------------------------------------------------------------------*/
@@ -26,16 +27,52 @@
  *         1 - success
  */
 
-int readFromDB(char **data)
+int mock_tr181_db_init(char* db_name)
+{
+	if(g_mock_tr181_db_name)
+	{
+		free(g_mock_tr181_db_name);
+		g_mock_tr181_db_name = NULL;
+	}
+
+	if(db_name)
+	{
+		g_mock_tr181_db_name = strdup(db_name);
+	}
+	else
+	{
+		Error("Mock DB name invalid !!\n");
+		return 0;
+	}
+
+	return 1;
+}
+
+
+int mock_tr181_db_read(char **data)
 {
 	FILE *fp;
 	int ch_count = 0;
-	fp = fopen(DB_FILE, "r");
-	if (fp == NULL)
+	if(g_mock_tr181_db_name)
 	{
-		Error("Failed to open file %s\n", DB_FILE);
-		return 0;
+		fp = fopen(g_mock_tr181_db_name, "r");
+		if (fp == NULL)
+		{
+			Error("Failed to open db file \"%s\"\n", g_mock_tr181_db_name);
+			return 0;
+		}
 	}
+	else
+	{
+		Print("Mock db file not specified in options. Using default db file: %s\n", P2M_DB_FILE);
+		fp = fopen(P2M_DB_FILE, "r");
+		if (fp == NULL)
+		{
+			Error("Failed to open db file \"%s\"\n", P2M_DB_FILE);
+			return 0;
+		}
+	}
+
 	fseek(fp, 0, SEEK_END);  //set file position to end
 	ch_count = ftell(fp);    // get the file position
 	fseek(fp, 0, SEEK_SET);  //set file position to start
@@ -60,16 +97,32 @@ int readFromDB(char **data)
  * returns 0 - failure
  *         1 - success
  */
-int writeToDB(char *data)
+int mock_tr181_db_write(char *data)
 {
 	FILE *fp;
-	fp = fopen(DB_FILE, "w");
-	if (fp == NULL)
+
+	if(g_mock_tr181_db_name)
 	{
-		Error("Failed to open file %s\n", DB_FILE);
-		return 0;
+		fp = fopen(g_mock_tr181_db_name, "w");
+		if (fp == NULL)
+		{
+			Error("Failed to open db file \"%s\"\n", g_mock_tr181_db_name);
+			return 0;
+		}
 	}
+	else
+	{
+		Print("Mock db file not specified in options. Using default db file: %s\n", P2M_DB_FILE);
+		fp = fopen(P2M_DB_FILE, "w");
+		if (fp == NULL)
+		{
+			Error("Failed to open db file \"%s\"\n", P2M_DB_FILE);
+			return 0;
+		}
+	}
+
 	fwrite(data, strlen(data), 1, fp);
+
 	fclose(fp);
 	return 1;
 }

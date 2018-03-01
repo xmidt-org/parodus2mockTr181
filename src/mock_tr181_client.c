@@ -15,8 +15,6 @@
  *
  */
 
-//#include <stdbool.h>
-//#include <stdint.h>
 
 #include "mock_tr181_client.h"
 #include "mock_tr181_adapter.h"
@@ -25,8 +23,13 @@
 /*                                   Macros                                   */
 /*----------------------------------------------------------------------------*/
 
+#define P2M_PARODUS_PORT_NUM 6666
+
+#define P2M_MOCK_PORT_NUM 6663
+
+
 // Limit for total number of wild card matched params in the Response
-#define MAX_WILDCARD_PARAMS 100
+#define P2M_MAX_WILDCARD_PARAMS 100
 
 /*----------------------------------------------------------------------------*/
 /*                            File Scoped Variables                           */
@@ -64,15 +67,17 @@ const char *rdk_logger_module_fetch(void)
 	return "LOG.RDK.MOCK_TR181";
 }
 
-void connect_parodus()
+void connect_parodus_default()
 {
 
-	libpd_cfg_t cfg = { .service_name = "config", .receive = true,
-			.keepalive_timeout_secs = 64, .parodus_url = "tcp://127.0.0.1:6666",
+	libpd_cfg_t cfg = {
+			.service_name = "config",
+			.receive = true,
+			.keepalive_timeout_secs = 64,
+			.parodus_url = "tcp://127.0.0.1:6666",
 			.client_url = "tcp://127.0.0.1:6663" };
 
-	Info(
-			"Configurations => service_name : %s parodus_url : %s client_url : %s\n",
+	Info("Configurations => service_name : %s parodus_url : %s client_url : %s\n",
 			cfg.service_name, cfg.parodus_url, cfg.client_url);
 
 	while (1)
@@ -89,6 +94,73 @@ void connect_parodus()
 			Error("Init for parodus failed: '%s'\n", libparodus_strerror(ret));
 			sleep(5);
 		}
+		libparodus_shutdown(&mock_tr181_instance);
+
+	}
+}
+
+void connect_parodus(char* parodus_port, char* client_port)
+{
+	if(parodus_port == NULL &&  client_port == NULL)
+	{
+		return connect_parodus_default();
+	}
+
+	char str_parodus_url[128] = {};
+	char str_client_url[128] = {};
+	memset(str_parodus_url, 0, 128);
+	memset(str_client_url, 0, 128);
+
+	if(parodus_port)
+	{
+		snprintf(str_parodus_url, 128-1, "tcp://127.0.0.1:%s", parodus_port);
+	}
+	else
+	{
+		strncpy(str_parodus_url, "tcp://127.0.0.1:6666", strlen("tcp://127.0.0.1:6666")+1);
+	}
+
+	if(client_port)
+	{
+		snprintf(str_client_url, 128-1, "tcp://127.0.0.1:%s", client_port);
+	}
+	else
+	{
+		strncpy(str_client_url, "tcp://127.0.0.1:6663", strlen("tcp://127.0.0.1:6663")+1);
+	}
+
+	//libpd_cfg_t cfg = { .service_name = "config", .receive = true,
+	//		.keepalive_timeout_secs = 64, .parodus_url = "tcp://127.0.0.1:6666",
+	//		.client_url = "tcp://127.0.0.1:6663" };
+
+	libpd_cfg_t cfg = {
+			.service_name = "config",
+			.receive = true,
+			.keepalive_timeout_secs = 64,
+			.parodus_url = str_parodus_url,
+			.client_url = str_client_url
+		};
+
+	Info( "Configurations => service_name : \"%s\" parodus_url : \"%s\" client_url : \"%s\"\n",
+			cfg.service_name,
+			cfg.parodus_url,
+			cfg.client_url );
+
+	while (1)
+	{
+		int ret = libparodus_init(&mock_tr181_instance, &cfg);
+
+		if (ret == 0)
+		{
+			Info("Init for parodus Success..!!\n");
+			break;
+		}
+		else
+		{
+			Error("Init for parodus failed ! : '%s'\n", libparodus_strerror(ret));
+			sleep(5);
+		}
+
 		libparodus_shutdown(&mock_tr181_instance);
 
 	}
@@ -149,7 +221,7 @@ static void processRequest(char *reqPayload, char **resPayload)
 	 * get all the TR181 params from db file.
 	 * Note: db in json format
 	 */
-	int status = readFromDB(&dbData);
+	int status = mock_tr181_db_read(&dbData);
 	if (status == 1)
 	{
 		Info("Data from DB: %s\n", dbData);
@@ -522,7 +594,7 @@ static void processRequest(char *reqPayload, char **resPayload)
 
 			addData = cJSON_Print(paramList);
 			Print("addData : %s\n", addData);
-			status = writeToDB(addData);
+			status = mock_tr181_db_write(addData);
 			if (status == 1)
 			{
 				Info("Data is successfully added to DB\n");
