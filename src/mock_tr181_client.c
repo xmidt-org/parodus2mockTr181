@@ -230,12 +230,14 @@ static void processRequest(char *reqPayload, char **resPayload)
 
 	if (status == 1)
 	{
-		Info("Data from DB: %s\n", dbData);
+		Info("Data from DB: %s\n", dbData); fflush(NULL);
+		Print("Calling cJSON_Parse\n"); fflush(NULL);
 		paramList = cJSON_Parse(dbData); //paramList contains TR181 db
+		Print(" cJSON_Parse() returned\n"); fflush(NULL);
 	}
 	else
 	{
-		Error("Failed to read from DB\n");
+		Error("Failed to read from DB\n");fflush(NULL);
 		paramList = cJSON_CreateArray();
 	}
 
