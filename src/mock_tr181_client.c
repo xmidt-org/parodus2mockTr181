@@ -264,7 +264,7 @@ static void processRequest(char *reqPayload, char **resPayload)
 
 		// Res Type same as Req Type
 		resObj->reqType = reqObj->reqType;
-		Info("Response:> type = %d\n", resObj->reqType);
+		Print("Response:> type = %d\n", resObj->reqType);
 
 		// Create Res for GET
 		if (reqObj->reqType == GET)
@@ -272,9 +272,9 @@ static void processRequest(char *reqPayload, char **resPayload)
 			//Response paramCnt is same as Req paramCnt
 			// Note : for wildcard, the retParamCnt for each param differs.
 			//  Param here is loosly used to refer both tr181 pamameter and object
-			Info("Request:> ParamCount = %zu\n", reqObj->u.getReq->paramCnt);
+			Print("Request:> ParamCount = %zu\n", reqObj->u.getReq->paramCnt);
 			resParamCount = resObj->paramCnt = reqObj->u.getReq->paramCnt;
-			Info("Response:> paramCnt = %zu\n", resObj->paramCnt);
+			Print("Response:> paramCnt = %zu\n", resObj->paramCnt);
 
 			// allocate retStatus to point to array of WDMP_STATUS
 			resObj->retStatus = (WDMP_STATUS*) malloc(
@@ -390,11 +390,11 @@ static void processRequest(char *reqPayload, char **resPayload)
 					{
 						resObj->u.getRes->paramNames[i] =
 								reqObj->u.getReq->paramNames[i];
-						Info("Response:> paramNames[%d] = %s\n", i,
+						Print("Response:> paramNames[%d] = %s\n", i,
 								resObj->u.getRes->paramNames[i]);
 
 						resObj->u.getRes->retParamCnt[i] = retParamCnt;
-						Info("Response:> retParamCnt[%d] = %zu\n", i,
+						Print("Response:> retParamCnt[%d] = %zu\n", i,
 								resObj->u.getRes->retParamCnt[i]);
 
 						resObj->u.getRes->params[i] = (param_t *) malloc(
@@ -412,13 +412,13 @@ static void processRequest(char *reqPayload, char **resPayload)
 						free_param_t_list(pList);
 
 						resObj->retStatus[i] = ret;
-						Info("Response:> retStatus[%d] = %d\n", i,
+						Print("Response:> retStatus[%d] = %d\n", i,
 								resObj->retStatus[i]);
 					}
 					else
 					{
 						resObj->retStatus[i] = WDMP_ERR_INVALID_PARAMETER_NAME;
-						Info("Response:> retStatus[%d] = %d\n", i,
+						Print("Response:> retStatus[%d] = %d\n", i,
 								resObj->retStatus[i]);
 					}
 
@@ -457,21 +457,21 @@ static void processRequest(char *reqPayload, char **resPayload)
 					{
 						resObj->u.getRes->paramNames[i] =
 								reqObj->u.getReq->paramNames[i];
-						Info("Response:> paramNames[%d] = %s\n", i,
+						Print("Response:> paramNames[%d] = %s\n", i,
 								resObj->u.getRes->paramNames[i]);
 
 						resObj->u.getRes->retParamCnt[i] = 1;
-						Info("Response:> retParamCnt[%d] = %zu\n", i,
+						Print("Response:> retParamCnt[%d] = %zu\n", i,
 								resObj->u.getRes->retParamCnt[i]);
 
 						resObj->retStatus[i] = ret;
-						Info("Response:> retStatus[%d] = %d\n", i,
+						Print("Response:> retStatus[%d] = %d\n", i,
 								resObj->retStatus[i]);
 					}
 					else
 					{
 						resObj->retStatus[i] = WDMP_ERR_INVALID_PARAMETER_NAME;
-						Info("Response:> retStatus[%d] = %d\n", i,
+						Print("Response:> retStatus[%d] = %d\n", i,
 								resObj->retStatus[i]);
 					}
 				}
@@ -481,9 +481,9 @@ static void processRequest(char *reqPayload, char **resPayload)
 		}
 		else if (reqObj->reqType == GET_ATTRIBUTES)
 		{
-			Info("Request:> ParamCount = %zu\n", reqObj->u.getReq->paramCnt);
+			Print("Request:> ParamCount = %zu\n", reqObj->u.getReq->paramCnt);
 			resObj->paramCnt = reqObj->u.getReq->paramCnt;
-			Info("Response:> paramCnt = %zu\n", resObj->paramCnt);
+			Print("Response:> paramCnt = %zu\n", resObj->paramCnt);
 			resObj->retStatus = (WDMP_STATUS *) malloc(
 					sizeof(WDMP_STATUS) * resObj->paramCnt);
 			resObj->timeSpan = NULL;
@@ -513,14 +513,14 @@ static void processRequest(char *reqPayload, char **resPayload)
 
 						strcpy(resObj->u.paramRes->params[i].name,
 								cJSON_GetObjectItem(obj, "name")->valuestring);
-						Info("Response:> params[%d].name = %s\n", i,
+						Print("Response:> params[%d].name = %s\n", i,
 								resObj->u.paramRes->params[i].name);
 						strcpy(resObj->u.paramRes->params[i].value,
 								cJSON_GetObjectItem(obj, "notify")->valuestring);
-						Info("Response:> params[%d].value = %s\n", i,
+						Print("Response:> params[%d].value = %s\n", i,
 								resObj->u.paramRes->params[i].value);
 						resObj->u.paramRes->params[i].type = WDMP_INT;
-						Info("Response:> params[%d].type = %d\n", i,
+						Print("Response:> params[%d].type = %d\n", i,
 								resObj->u.paramRes->params[i].type);
 						matchFlag = 1;
 						break;
@@ -540,16 +540,16 @@ static void processRequest(char *reqPayload, char **resPayload)
 					resObj->retStatus[i] = WDMP_ERR_INVALID_PARAMETER_NAME;
 				}
 
-				Info("Response:> retStatus[%d] = %d\n", i,
+				Print("Response:> retStatus[%d] = %d\n", i,
 						resObj->retStatus[i]);
 			}
 		}
 		else if ((reqObj->reqType == SET)
 				|| (reqObj->reqType == SET_ATTRIBUTES))
 		{
-			Info("Request:> ParamCount = %zu\n", reqObj->u.setReq->paramCnt);
+			Print("Request:> ParamCount = %zu\n", reqObj->u.setReq->paramCnt);
 			resObj->paramCnt = reqObj->u.setReq->paramCnt;
-			Info("Response:> paramCnt = %zu\n", resObj->paramCnt);
+			Print("Response:> paramCnt = %zu\n", resObj->paramCnt);
 			resObj->retStatus = (WDMP_STATUS *) malloc(
 					sizeof(WDMP_STATUS) * resObj->paramCnt);
 			resObj->timeSpan = NULL;
@@ -563,11 +563,11 @@ static void processRequest(char *reqPayload, char **resPayload)
 
 			for (i = 0; i < reqParamCount; i++)
 			{
-				Info("Request:> param[%d].name = %s\n", i,
+				Print("Request:> param[%d].name = %s\n", i,
 						reqObj->u.setReq->param[i].name);
-				Info("Request:> param[%d].value = %s\n", i,
+				Print("Request:> param[%d].value = %s\n", i,
 						reqObj->u.setReq->param[i].value);
-				Info("Request:> param[%d].type = %d\n", i,
+				Print("Request:> param[%d].type = %d\n", i,
 						reqObj->u.setReq->param[i].type);
 
 				cJSON_AddItemToArray(paramList, obj = cJSON_CreateObject());
@@ -590,18 +590,18 @@ static void processRequest(char *reqPayload, char **resPayload)
 						sizeof(char) * 512);
 				strcpy(resObj->u.paramRes->params[i].name,
 						reqObj->u.setReq->param[i].name);
-				Info("Response:> params[%d].name = %s\n", i,
+				Print("Response:> params[%d].name = %s\n", i,
 						resObj->u.paramRes->params[i].name);
 				resObj->u.paramRes->params[i].value = NULL;
 				resObj->u.paramRes->params[i].type = 0;
 
 				resObj->retStatus[i] = ret;
-				Info("Response:> retStatus[%d] = %d\n", i,
+				Print("Response:> retStatus[%d] = %d\n", i,
 						resObj->retStatus[i]);
 			}
 
-			addData = cJSON_Info(paramList);
-			Info("addData : %s\n", addData);
+			addData = cJSON_Print(paramList);
+			Print("addData : %s\n", addData);
       
 			status = mock_tr181_db_write(addData);
 
@@ -617,7 +617,7 @@ static void processRequest(char *reqPayload, char **resPayload)
 	}
 
 	wdmp_form_response(resObj, &payload);
-	Info("payload : %s\n", payload);
+	Print("payload : %s\n", payload);
 	*resPayload = payload;
 
 	Info("Response:> Payload = %s\n", *resPayload);
@@ -704,7 +704,7 @@ void *parodus_receive_wait()
 			}
 
 			int sendStatus = libparodus_send(mock_tr181_instance, res_wrp_msg);
-			Info("sendStatus is %d\n", sendStatus);
+			Print("sendStatus is %d\n", sendStatus);
 			if (sendStatus == 0)
 			{
 				Info("Sent message successfully to parodus\n");
@@ -720,7 +720,7 @@ void *parodus_receive_wait()
 	}
 
 	libparodus_shutdown(&mock_tr181_instance);
-	Info("End of parodus_upstream\n");
+	Print("End of parodus_upstream\n");
 	return 0;
 }
 

@@ -96,7 +96,7 @@ int mock_tr181_db_read(char **data)
 	}
 
 	fclose(fp);
-	Info("mock_tr181_db_read() Returned Success\n");
+	Print("mock_tr181_db_read() Returned Success\n");
 	return 1;
 }
 
@@ -106,7 +106,7 @@ int mock_tr181_db_read(char **data)
  */
 int mock_tr181_db_write(char *data)
 {
-	Info("mock_tr181_db_write() Entered\n");
+	Print("mock_tr181_db_write() Entered\n");
 	FILE *fp;
 
 	if(g_mock_tr181_db_name)
@@ -120,7 +120,7 @@ int mock_tr181_db_write(char *data)
 	}
 	else
 	{
-		Info("Mock db file not specified in options. Using default db file: %s\n", P2M_DB_FILE);
+		Print("Mock db file not specified in options. Using default db file: %s\n", P2M_DB_FILE);
 		fp = fopen(P2M_DB_FILE, "w");
 		if (fp == NULL)
 		{
@@ -132,6 +132,6 @@ int mock_tr181_db_write(char *data)
 	fwrite(data, strlen(data), 1, fp);
 
 	fclose(fp);
-	Info("mock_tr181_db_write() Returned Success\n");
+	Print("mock_tr181_db_write() Returned Success\n");
 	return 1;
 }
