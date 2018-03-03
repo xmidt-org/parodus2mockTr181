@@ -49,7 +49,10 @@ int mock_tr181_db_init(char* db_name)
 	return 1;
 }
 
-
+/*
+ * returns 0 - failure
+ *         1 - success
+ */
 int mock_tr181_db_read(char **data)
 {
 	Info("mock_tr181_db_read() Entered\n");

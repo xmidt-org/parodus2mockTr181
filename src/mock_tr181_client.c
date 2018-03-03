@@ -566,7 +566,7 @@ static void processRequest(char *reqPayload, char **resPayload, int* resDelay)
 		resObj->reqType = reqObj->reqType;
 		Print("Response:> type = %d\n", resObj->reqType);
 
-		// Create Res for GET
+		/**===================================== GET =========================================**/
 		if (reqObj->reqType == GET)
 		{
 			processGETRequest(paramList, reqObj, resObj, resDelay);
