@@ -211,7 +211,7 @@ static int isWildcardQuery(char *req)
 static void processGETRequest(cJSON *jData, req_struct *reqObj, res_struct *resObj, int *resDelay)
 {
 	cJSON *obj = NULL;
-	int reqParamCount = 0, resParamCount = 0, i = 0, matchFlag = 0, count = 0, j = 0, k = 0;
+	int reqParamCount = 0, resParamCount = 0, i = 0, count = 0, j = 0, k = 0;
 	WDMP_STATUS ret = WDMP_SUCCESS;
 
 	//validate reqObj
@@ -513,7 +513,7 @@ static void processRequest(char *reqPayload, char **resPayload, int* resDelay)
 	res_struct *resObj = NULL;
 	cJSON *obj = NULL;
 	char *payload = NULL;
-	int reqParamCount = 0, resParamCount = 0, i = 0, matchFlag = 0, count = 0, j = 0, k = 0;
+	int reqParamCount = 0, i = 0, matchFlag = 0, count = 0, j = 0;
 	WDMP_STATUS ret = WDMP_SUCCESS;
 
 	/* Parse Request Payload.
@@ -569,7 +569,7 @@ static void processRequest(char *reqPayload, char **resPayload, int* resDelay)
 		// Create Res for GET
 		if (reqObj->reqType == GET)
 		{
-			processGETRequest(cJSON *jData, req_struct *reqObj, res_struct *resObj, int *resDelay)
+			processGETRequest(paramList, reqObj, resObj, resDelay);
 		}
 		/**===================================== GET_ATTRIBUTES =========================================**/
 		else if (reqObj->reqType == GET_ATTRIBUTES)
