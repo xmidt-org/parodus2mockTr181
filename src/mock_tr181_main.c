@@ -53,14 +53,14 @@ int main( int argc, char **argv)
 				break;
 			case 'h':
 				Info("Option h read\n");
-				printf("Usage:%s [-p <parodus_port>] [-c <client_port>] [-d <fully_qualified_database_name>]\n", argv[0]);
+				printf("Usage:%s [-p <parodus_port>] [-c <client_port>] [-d <../path/to/database_name>]\n", argv[0]);
 				return 0;
 			case '?':
 				Info("Option invalid\n");
 				if (strchr(option_string, optopt))
 				{
 					printf("%s Option %c requires an argument!\n", argv[0], optopt);
-					printf("Usage:%s [-p <parodus_port>] [-c <client_port>] [-d <fully_qualified_database_name>]\n", argv[0]);
+					printf("Usage:%s [-p <parodus_port>] [-c <client_port>] [-d <../path/to/database_name>]\n", argv[0]);
 					break;
 				}
 				else
