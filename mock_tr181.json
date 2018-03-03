@@ -5560,37 +5560,36 @@
     {
         "name": "Device.Bridging.Bridge.8.Status",
         "value": "Enabled",
-        "access": "rw",
+        "access": "r",
         "type": 0
     },
     {
         "name": "Device.Bridging.Bridge.8.Alias",
         "value": "Hotspot Network 4",
-        "access": "rw",
+        "access": "r",
         "type": 0
     },
     {
         "name": "Device.Bridging.Bridge.8.Standard",
         "value": "802.1Q-2005",
-        "access": "rw",
+        "access": "w",
         "type": 0
     },
     {
         "name": "Device.Bridging.Bridge.8.PortNumberOfEntries",
         "value": "3",
-        "access": "rw",
+        "access": "w",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.VLANNumberOfEntries",
         "value": "1",
-        "access": "rw",
+        "access": "w",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.VLANPortNumberOfEntries",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
@@ -5602,175 +5601,146 @@
     {
         "name": "Device.Bridging.Bridge.8.Port.1.Status",
         "value": "Unknown",
-        "access": "rw",
         "type": 0
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.1.Alias",
         "value": "Port1",
-        "access": "rw",
         "type": 0
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.1.Name",
         "value": "brlan5",
-        "access": "rw",
         "type": 0
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.1.LastChange",
         "value": "1519866405",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.1.LowerLayers",
         "value": "",
-        "access": "rw",
         "type": 0
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.1.ManagementPort",
         "value": "true",
-        "access": "rw",
         "type": 3
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.1.DefaultUserPriority",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.1.PriorityRegeneration",
         "value": "",
-        "access": "rw",
         "type": 0
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.1.PortState",
         "value": "Forwarding",
-        "access": "rw",
         "type": 0
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.1.PVID",
         "value": "105",
-        "access": "rw",
         "type": 1
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.1.AcceptableFrameTypes",
         "value": "AdmitAll",
-        "access": "rw",
         "type": 0
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.1.IngressFiltering",
         "value": "false",
-        "access": "rw",
         "type": 3
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.1.PriorityTagging",
         "value": "false",
-        "access": "rw",
         "type": 3
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.1.X_CISCO_COM_Mode",
         "value": "Tagging",
-        "access": "rw",
         "type": 0
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.1.Stats.BytesSent",
         "value": "180",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.1.Stats.BytesReceived",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.1.Stats.PacketsSent",
         "value": "2",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.1.Stats.PacketsReceived",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.1.Stats.ErrorsSent",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.1.Stats.ErrorsReceived",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.1.Stats.UnicastPacketsSent",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.1.Stats.UnicastPacketsReceived",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.1.Stats.DiscardPacketsSent",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.1.Stats.DiscardPacketsReceived",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.1.Stats.MulticastPacketsSent",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.1.Stats.MulticastPacketsReceived",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.1.Stats.BroadcastPacketsSent",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.1.Stats.BroadcastPacketsReceived",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.1.Stats.UnknownProtoPacketsReceived",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
@@ -5782,175 +5752,148 @@
     {
         "name": "Device.Bridging.Bridge.8.Port.2.Status",
         "value": "Up",
-        "access": "rw",
         "type": 0
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.2.Alias",
         "value": "Port2",
-        "access": "rw",
         "type": 0
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.2.Name",
         "value": "ath9",
-        "access": "rw",
+        "access": "w",
         "type": 0
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.2.LastChange",
         "value": "1519866405",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.2.LowerLayers",
         "value": "Device.WiFi.SSID.10105",
-        "access": "rw",
+        "access": "r",
         "type": 0
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.2.ManagementPort",
         "value": "false",
-        "access": "rw",
         "type": 3
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.2.DefaultUserPriority",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.2.PriorityRegeneration",
         "value": "",
-        "access": "rw",
         "type": 0
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.2.PortState",
         "value": "",
-        "access": "rw",
         "type": 0
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.2.PVID",
         "value": "105",
-        "access": "rw",
         "type": 1
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.2.AcceptableFrameTypes",
         "value": "AdmitAll",
-        "access": "rw",
         "type": 0
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.2.IngressFiltering",
         "value": "false",
-        "access": "rw",
         "type": 3
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.2.PriorityTagging",
         "value": "false",
-        "access": "rw",
         "type": 3
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.2.X_CISCO_COM_Mode",
         "value": "Tagging",
-        "access": "rw",
         "type": 0
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.2.Stats.BytesSent",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.2.Stats.BytesReceived",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.2.Stats.PacketsSent",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.2.Stats.PacketsReceived",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.2.Stats.ErrorsSent",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.2.Stats.ErrorsReceived",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.2.Stats.UnicastPacketsSent",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.2.Stats.UnicastPacketsReceived",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.2.Stats.DiscardPacketsSent",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.2.Stats.DiscardPacketsReceived",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.2.Stats.MulticastPacketsSent",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.2.Stats.MulticastPacketsReceived",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.2.Stats.BroadcastPacketsSent",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.2.Stats.BroadcastPacketsReceived",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.2.Stats.UnknownProtoPacketsReceived",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
@@ -5962,199 +5905,166 @@
     {
         "name": "Device.Bridging.Bridge.8.Port.3.Status",
         "value": "Up",
-        "access": "rw",
         "type": 0
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.3.Alias",
         "value": "Port3",
-        "access": "rw",
         "type": 0
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.3.Name",
         "value": "gretap0",
-        "access": "rw",
         "type": 0
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.3.LastChange",
         "value": "1519866406",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.3.LowerLayers",
         "value": "Device.X_CISCO_COM_GRE.Interface.1",
-        "access": "rw",
         "type": 0
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.3.ManagementPort",
         "value": "false",
-        "access": "rw",
         "type": 3
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.3.DefaultUserPriority",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.3.PriorityRegeneration",
         "value": "",
-        "access": "rw",
         "type": 0
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.3.PortState",
         "value": "",
-        "access": "rw",
         "type": 0
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.3.PVID",
         "value": "105",
-        "access": "rw",
         "type": 1
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.3.AcceptableFrameTypes",
         "value": "AdmitAll",
-        "access": "rw",
         "type": 0
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.3.IngressFiltering",
         "value": "false",
-        "access": "rw",
         "type": 3
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.3.PriorityTagging",
         "value": "false",
-        "access": "rw",
         "type": 3
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.3.X_CISCO_COM_Mode",
         "value": "PassThrough",
-        "access": "rw",
         "type": 0
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.3.Stats.BytesSent",
         "value": "180",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.3.Stats.BytesReceived",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.3.Stats.PacketsSent",
         "value": "2",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.3.Stats.PacketsReceived",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.3.Stats.ErrorsSent",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.3.Stats.ErrorsReceived",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.3.Stats.UnicastPacketsSent",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.3.Stats.UnicastPacketsReceived",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.3.Stats.DiscardPacketsSent",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.3.Stats.DiscardPacketsReceived",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.3.Stats.MulticastPacketsSent",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.3.Stats.MulticastPacketsReceived",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.3.Stats.BroadcastPacketsSent",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.3.Stats.BroadcastPacketsReceived",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.3.Stats.UnknownProtoPacketsReceived",
         "value": "0",
-        "access": "rw",
         "type": 2
     },
     {
         "name": "Device.Bridging.Bridge.8.VLAN.1.Enable",
         "value": "true",
-        "access": "rw",
         "type": 3
     },
     {
         "name": "Device.Bridging.Bridge.8.VLAN.1.Alias",
         "value": "CPE-VLAN1",
-        "access": "rw",
         "type": 0
     },
     {
         "name": "Device.Bridging.Bridge.8.VLAN.1.Name",
         "value": "brlan5",
-        "access": "rw",
         "type": 0
     },
     {
         "name": "Device.Bridging.Bridge.8.VLAN.1.VLANID",
         "value": "105",
-        "access": "rw",
         "type": 1
     },
     {
