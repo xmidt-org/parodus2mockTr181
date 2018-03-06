@@ -49,7 +49,10 @@ int mock_tr181_db_init(char* db_name)
 	return 1;
 }
 
-
+/*
+ * returns 0 - failure
+ *         1 - success
+ */
 int mock_tr181_db_read(char **data)
 {
 	Info("mock_tr181_db_read() Entered\n");
@@ -83,10 +86,18 @@ int mock_tr181_db_read(char **data)
 	ch_count = ftell(fp);    // get the file position
 	fseek(fp, 0, SEEK_SET);  //set file position to start
 
+	Info("DB file size : %d\n", ch_count);
 	*data = (char *) malloc(sizeof(char) * (ch_count + 1)); //allocate memory for file size
 	if (*data != NULL)
 	{
-		fread(*data, 1, ch_count, fp);  // copy file to memory
+		memset(*data, 0, ch_count+1);
+		size_t sz = fread(*data, 1, ch_count, fp);  // copy file to memory
+		if(sz == 0)
+		{
+			Error("Error: Read file size: %d\n", sz);
+		}
+
+		Info("Read %d bytes from db file\n", sz);
 		(*data)[ch_count] = '\0';
 	}
 	else

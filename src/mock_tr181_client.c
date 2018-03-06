@@ -204,13 +204,316 @@ static int isWildcardQuery(char *req)
 	return 0;
 }
 
-static void processRequest(char *reqPayload, char **resPayload)
+/* From cData get all parameters requested by reqObj and populate them into resObj
+ * only if the parameter is allowed to be read.
+ * Calculate response delay by adding the individual delay for each param if found.
+ */
+static void processGETRequest(cJSON *jData, req_struct *reqObj, res_struct *resObj, int *resDelay)
+{
+	cJSON *obj = NULL;
+	int reqParamCount = 0, resParamCount = 0, i = 0, count = 0, j = 0, k = 0;
+	WDMP_STATUS ret = WDMP_SUCCESS;
+
+	//validate reqObj
+	if (reqObj == NULL || resObj == NULL || reqObj->reqType != GET || reqObj->u.getReq == NULL)
+	{
+		Error("processGETRequest() invalid input!\n");
+		return;
+	}
+
+	int delay_sum = 0;
+
+	//Response paramCnt is same as Req paramCnt
+	// Note : for wildcard, the retParamCnt for each param differs.
+	//  Param here is loosly used to refer both tr181 pamameter and object
+	Print("Request:> ParamCount = %zu\n", reqObj->u.getReq->paramCnt);
+	reqParamCount = (int) reqObj->u.getReq->paramCnt;
+	resParamCount = resObj->paramCnt = reqObj->u.getReq->paramCnt;
+	Print("Response:> paramCnt = %zu\n", resObj->paramCnt);
+
+	// allocate retStatus to point to array of WDMP_STATUS
+	resObj->retStatus = (WDMP_STATUS*) malloc(sizeof(WDMP_STATUS) * resParamCount);
+	if (!resObj->retStatus)
+	{
+		Error("Malloc Failed!\n");
+		return;
+	}
+
+	resObj->timeSpan = NULL;
+
+	//Ok. We took care of res_struct. Now allocate the union within the struct
+	resObj->u.getRes = (get_res_t *) malloc(sizeof(get_res_t));
+	if (resObj->u.getRes)
+	{
+		memset(resObj->u.getRes, 0, sizeof(get_res_t));
+	}
+	else
+	{
+		Error("Malloc Failed!\n");
+		return;
+	}
+
+	/* below code populates each member within the get_res_t struct referred by getRes union */
+
+	// paramCnt is same as the number of params/objects in Request
+	resObj->u.getRes->paramCnt = resParamCount;
+
+	// allocate paramNames to hold as many pointers as the names of params/objects in the Request
+	resObj->u.getRes->paramNames = (char **) malloc(sizeof(char*) * resParamCount);
+	if (resObj->u.getRes->paramNames == NULL)
+	{
+		Error("Malloc Failed!\n");
+		return;
+	}
+
+	// allocate retParamCnt to hold as many values as the names of params/objects in the Request
+	// Now, the value of retParamCnt will vary depending on parameter query or wildcard query.
+	//      if paramNames[i] is a parameter, then retParamCnt is 1
+	//      if it is a wildcard (object query), then the retParamCnt will
+	//          hold the size of the total number of parameters found for that wildcard query.
+	resObj->u.getRes->retParamCnt = (size_t *) malloc(sizeof(size_t) * resParamCount);
+	if (resObj->u.getRes->retParamCnt == NULL)
+	{
+		Error("Malloc Failed!\n");
+		return;
+	}
+
+	// allocate params (array of params pointers)
+	//   this holds as many pointers as the names of params/objects in the Request
+	resObj->u.getRes->params = (param_t **) malloc(sizeof(param_t*) * resParamCount);
+	if (resObj->u.getRes->params)
+	{
+		memset(resObj->u.getRes->params, 0, sizeof(param_t*) * resParamCount);
+	}
+	else
+	{
+		Error("Malloc Failed!\n");
+		return;
+	}
+
+	/* go through each Req param/obj(wildcard) and look for matches in db
+	 *  - get param only if the param access is allowed (For GET 'r' or 'rw')
+	 *  - calculate total response delay time
+	 **/
+	for (i = 0; i < reqParamCount; i++)
+	{
+		int retParamCnt = 0;
+
+		if (isWildcardQuery(reqObj->u.getReq->paramNames[i]))
+		{
+			Info("Searching for \"%s\"\n", reqObj->u.getReq->paramNames[i]);
+			/* Wildcard query */
+			/* look for all params matching the wildcard */
+			struct param_t_list* pList = NULL, *pLast = NULL;
+
+			count = cJSON_GetArraySize(jData);
+			if (count == 0)
+			{
+				Error("The Database seems to be empty! please check.\n");
+			}
+			for (j = 0; j < count; j++)
+			{
+				obj = cJSON_GetArrayItem(jData, j);
+				if (NULL != obj)
+				{
+					if ((cJSON_GetObjectItem(obj, "name") != NULL))
+					{
+						char* str_name = cJSON_GetObjectItem(obj, "name")->valuestring;
+						if (str_name != NULL)
+						{
+							if (strncmp(reqObj->u.getReq->paramNames[i], str_name, strlen(reqObj->u.getReq->paramNames[i])) == 0)
+							{
+								/*
+								 * Check if the parameter is readable by checking the 'access' field
+								 * 'access' should be 'r' or 'rw', otherwise ignore this parameter
+								 */
+								cJSON *access = cJSON_GetObjectItem(obj, "access");
+								if (access != NULL && access->valuestring != NULL
+										&& ( (strncmp(access->valuestring, "r", 1) == 0)
+											||(strncmp(access->valuestring, "wr", 2) == 0) ))
+								{
+									Info("Found : \"%s\"\n", str_name);
+									retParamCnt++;
+
+									//Find response delay if any for this parameter
+									if (cJSON_GetObjectItem(obj, "delay"))
+									{
+										delay_sum += cJSON_GetObjectItem(obj, "delay")->valueint;
+									}
+
+									//add to a tmp list
+									struct param_t_list *tmp = (struct param_t_list*) malloc(sizeof(struct param_t_list));
+									if (tmp)
+									{
+										memset(tmp, 0, sizeof(struct param_t_list));
+										tmp->p.name = strdup(str_name);
+
+										if (cJSON_GetObjectItem(obj, "value"))
+										{
+											tmp->p.value = strdup(cJSON_GetObjectItem(obj, "value")->valuestring);
+										}
+
+										Info("Value : \"%s\"\n", tmp->p.value);
+
+										if (cJSON_GetObjectItem(obj, "type"))
+										{
+											tmp->p.type = cJSON_GetObjectItem(obj, "type")->valueint;
+										}
+
+										Info("Type  : %d\n", tmp->p.type);
+
+										tmp->next = NULL;
+										//add to list
+										if (pList)
+										{
+											pLast->next = tmp;
+											pLast = tmp;
+										}
+										else
+										{
+											pList = pLast = tmp;
+										}
+									}
+									else
+									{
+										Error("Malloc Failed!\n");
+										return;
+									}
+								}
+								else
+								{
+									Info("Found non-readable param: \"%s\" \n", str_name);
+								}
+							}
+						}
+					}
+					else
+					{
+						Error("JSON Parser cannot find \"name\" field in param# %d in db ! . Verify the DB file!\n", j + 1);
+					}
+				}
+			}
+
+			if (retParamCnt)
+			{
+				resObj->u.getRes->paramNames[i] = reqObj->u.getReq->paramNames[i];
+				Print("Response:> paramNames[%d] = %s\n", i, resObj->u.getRes->paramNames[i]);
+
+				resObj->u.getRes->retParamCnt[i] = retParamCnt;
+				Print("Response:> retParamCnt[%d] = %zu\n", i, resObj->u.getRes->retParamCnt[i]);
+
+				resObj->u.getRes->params[i] = (param_t *) malloc(sizeof(param_t) * retParamCnt);
+				struct param_t_list* pl = pList;
+				for (k = 0; k < retParamCnt && pList != NULL; k++, pl = pl->next)
+				{
+					resObj->u.getRes->params[i][k].name = strdup(pl->p.name);
+					resObj->u.getRes->params[i][k].value = strdup(pl->p.value);
+					resObj->u.getRes->params[i][k].type = pl->p.type;
+				}
+				free_param_t_list(pList);
+
+				resObj->retStatus[i] = ret;
+				Print("Response:> retStatus[%d] = %d\n", i, resObj->retStatus[i]);
+			}
+			else
+			{
+				resObj->retStatus[i] = WDMP_ERR_INVALID_PARAMETER_NAME;
+				Print("Response:> retStatus[%d] = %d\n", i, resObj->retStatus[i]);
+			}
+
+		}
+		else /* Query for individual parameter. Not wildcard */
+		{
+			/* query for individual parameter. Stop at first find. */
+
+			count = cJSON_GetArraySize(jData);
+			// look through each param for the DB for a match. Stop at first match
+			for (j = 0; j < count; j++)
+			{
+				obj = cJSON_GetArrayItem(jData, j);
+				if ((NULL != obj)
+						&& (cJSON_GetObjectItem(obj, "name") != NULL)
+						&& (strcmp(reqObj->u.getReq->paramNames[i], cJSON_GetObjectItem(obj, "name")->valuestring) == 0))
+				{
+					/*
+					 * Check if the parameter is readable by checking the 'access' field
+					 * 'access' should be 'r' or 'rw', otherwise ignore this parameter
+					 */
+					cJSON *access = cJSON_GetObjectItem(obj, "access");
+					if (access != NULL && access->valuestring != NULL
+							&& ((strncmp(access->valuestring, "r", 1) == 0) || (strncmp(access->valuestring, "wr", 2) == 0)))
+					{
+						Info("Found :  \"%s\"\n", reqObj->u.getReq->paramNames[i]);
+
+						resObj->u.getRes->params[i] = (param_t *) malloc(sizeof(param_t));
+						if (resObj->u.getRes->params[i] == NULL)
+						{
+							Error("malloc() failed !!!\n");
+							return;
+						}
+
+						resObj->u.getRes->params[i][0].name = strdup(cJSON_GetObjectItem(obj, "name")->valuestring);
+
+						if (cJSON_GetObjectItem(obj, "value"))
+						{
+							resObj->u.getRes->params[i][0].value = strdup(cJSON_GetObjectItem(obj, "value")->valuestring);
+							Info("Value :  \"%s\"\n", resObj->u.getRes->params[i][0].value);
+						}
+
+						if (cJSON_GetObjectItem(obj, "type"))
+						{
+							resObj->u.getRes->params[i][0].type = cJSON_GetObjectItem(obj, "type")->valueint;
+							Info("Type  :  %d\n", resObj->u.getRes->params[i][0].type);
+						}
+
+						//Find response delay if any for this parameter
+						if (cJSON_GetObjectItem(obj, "delay"))
+						{
+							delay_sum += cJSON_GetObjectItem(obj, "delay")->valueint;
+						}
+
+						retParamCnt = 1;
+						break;
+					}
+					else
+					{
+						Info("Found non-readable param: \"%s\" \n", reqObj->u.getReq->paramNames[i]);
+					}
+				}
+			}
+
+			if (retParamCnt)
+			{
+				resObj->u.getRes->paramNames[i] = reqObj->u.getReq->paramNames[i];
+				Print("Response:> paramNames[%d] = %s\n", i, resObj->u.getRes->paramNames[i]);
+
+				resObj->u.getRes->retParamCnt[i] = 1;
+				Print("Response:> retParamCnt[%d] = %zu\n", i, resObj->u.getRes->retParamCnt[i]);
+
+				resObj->retStatus[i] = ret;
+				Print("Response:> retStatus[%d] = %d\n", i, resObj->retStatus[i]);
+			}
+			else
+			{
+				resObj->retStatus[i] = WDMP_ERR_INVALID_PARAMETER_NAME;
+				Print("Response:> retStatus[%d] = %d\n", i, resObj->retStatus[i]);
+			}
+		}
+	}
+
+	Info("Calculated delay before response can be sent %d sec minimum\n", delay_sum);
+	*resDelay = delay_sum;
+
+	return;
+}
+
+static void processRequest(char *reqPayload, char **resPayload, int* resDelay)
 {
 	req_struct *reqObj = NULL;
 	res_struct *resObj = NULL;
 	cJSON *obj = NULL;
 	char *payload = NULL;
-	int reqParamCount = 0, resParamCount = 0, i = 0, matchFlag = 0, count = 0, j = 0, k = 0;
+	int reqParamCount = 0, i = 0, matchFlag = 0, count = 0, j = 0;
 	WDMP_STATUS ret = WDMP_SUCCESS;
 
 	/* Parse Request Payload.
@@ -230,17 +533,11 @@ static void processRequest(char *reqPayload, char **resPayload)
 	if (status == 1)
 	{
 		Info("Data from DB: %s\n", dbData);
-		fflush(NULL);
-		Info("Calling cJSON_Parse\n");
-		fflush(NULL);
 		paramList = cJSON_Parse(dbData); //paramList contains TR181 db
-		Info(" cJSON_Parse() returned\n");
-		fflush(NULL);
 	}
 	else
 	{
 		Error("Failed to read from DB\n");
-		fflush(NULL);
 		paramList = cJSON_CreateArray();
 	}
 
@@ -269,213 +566,10 @@ static void processRequest(char *reqPayload, char **resPayload)
 		resObj->reqType = reqObj->reqType;
 		Print("Response:> type = %d\n", resObj->reqType);
 
-		// Create Res for GET
+		/**===================================== GET =========================================**/
 		if (reqObj->reqType == GET)
 		{
-			//Response paramCnt is same as Req paramCnt
-			// Note : for wildcard, the retParamCnt for each param differs.
-			//  Param here is loosly used to refer both tr181 pamameter and object
-			Print("Request:> ParamCount = %zu\n", reqObj->u.getReq->paramCnt);
-			resParamCount = resObj->paramCnt = reqObj->u.getReq->paramCnt;
-			Print("Response:> paramCnt = %zu\n", resObj->paramCnt);
-
-			// allocate retStatus to point to array of WDMP_STATUS
-			resObj->retStatus = (WDMP_STATUS*) malloc(sizeof(WDMP_STATUS) * resParamCount);
-			if (!resObj->retStatus)
-			{
-				Error("Malloc Failed!\n");
-				return;
-			}
-
-			resObj->timeSpan = NULL;
-
-			//Ok. We took care of res_struct. Now allocate the union within the struct
-			resObj->u.getRes = (get_res_t *) malloc(sizeof(get_res_t));
-			if (resObj->u.getRes)
-			{
-				memset(resObj->u.getRes, 0, sizeof(get_res_t));
-			}
-			else
-			{
-				Error("Malloc Failed!\n");
-				return;
-			}
-
-			/* below code populates each member within the get_res_t struct referred by getRes union */
-
-			// paramCnt is same as the number of params/objects in Request
-			resObj->u.getRes->paramCnt = resParamCount;
-
-			// allocate paramNames to hold as many pointers as the names of params/objects in the Request
-			resObj->u.getRes->paramNames = (char **) malloc(sizeof(char*) * resParamCount);
-
-			// allocate retParamCnt to hold as many values as the names of params/objects in the Request
-			// Now, the value of retParamCnt will vary depending on parameter query or wildcard query.
-			//      if paramNames[i] is a parameter, then retParamCnt is 1
-			//      if it is a wildcard (object query), then the retParamCnt will
-			//          hold the size of the total number of parameters found for that wildcard query.
-			resObj->u.getRes->retParamCnt = (size_t *) malloc(sizeof(size_t) * resParamCount);
-
-			// allocate params (array of params pointers)
-			//   this holds as many pointers as the names of params/objects in the Request
-			resObj->u.getRes->params = (param_t **) malloc(sizeof(param_t*) * resParamCount);
-			memset(resObj->u.getRes->params, 0, sizeof(param_t*) * resParamCount);
-
-			/* go through each Req param/obj(wildcard) and look for matches in db */
-			reqParamCount = (int) reqObj->u.getReq->paramCnt;
-
-			for (i = 0; i < reqParamCount; i++)
-			{
-				int retParamCnt = 0;
-
-				if (isWildcardQuery(reqObj->u.getReq->paramNames[i]))
-				{
-					Info("Searching for \"%s\"\n", reqObj->u.getReq->paramNames[i]);
-					/* Wildcard query */
-					/* look for all params matching the wildcard */
-					struct param_t_list* pList = NULL, *pLast = NULL;
-
-					count = cJSON_GetArraySize(paramList);
-					for (j = 0; j < count; j++)
-					{
-						obj = cJSON_GetArrayItem(paramList, j);
-						if ((NULL != obj) && (cJSON_GetObjectItem(obj, "name") != NULL))
-						{
-							char* str_name = cJSON_GetObjectItem(obj, "name")->valuestring;
-							if(str_name == NULL)
-							{
-								Error("JSON Parser returned Error for \"name\"-> valuestring !!\n");
-							}
-							else
-							{
-								if (strncmp(reqObj->u.getReq->paramNames[i], str_name, strlen(reqObj->u.getReq->paramNames[i])) == 0)
-								{
-									Info("Found : \"%s\"\n", str_name);
-
-									retParamCnt++;
-									//add to a tmp list
-									struct param_t_list *tmp = (struct param_t_list*) malloc(sizeof(struct param_t_list));
-									if (tmp)
-									{
-										tmp->p.name = strdup(str_name);
-
-										if(cJSON_GetObjectItem(obj, "value"))
-												tmp->p.value = strdup(cJSON_GetObjectItem(obj, "value")->valuestring);
-										Info("Value : \"%s\"\n", tmp->p.value);
-
-										if(cJSON_GetObjectItem(obj, "type"))
-											tmp->p.type = cJSON_GetObjectItem(obj, "type")->valueint;
-										Info("Type  : %d\n", tmp->p.type);
-
-										tmp->next = NULL;
-										//add to list
-										if (pList)
-										{
-											pLast->next = tmp;
-											pLast = tmp;
-										}
-										else
-										{
-											pList = pLast = tmp;
-										}
-									}
-									else
-									{
-										Error("Malloc Failed!\n");
-										return;
-									}
-								}
-							}
-						}
-					}
-
-					if (retParamCnt)
-					{
-						resObj->u.getRes->paramNames[i] = reqObj->u.getReq->paramNames[i];
-						Print("Response:> paramNames[%d] = %s\n", i, resObj->u.getRes->paramNames[i]);
-
-						resObj->u.getRes->retParamCnt[i] = retParamCnt;
-						Print("Response:> retParamCnt[%d] = %zu\n", i, resObj->u.getRes->retParamCnt[i]);
-
-						resObj->u.getRes->params[i] = (param_t *) malloc(sizeof(param_t) * retParamCnt);
-						struct param_t_list* pl = pList;
-						for (k = 0; k < retParamCnt && pList != NULL; k++, pl = pl->next)
-						{
-							resObj->u.getRes->params[i][k].name = strdup(pl->p.name);
-							resObj->u.getRes->params[i][k].value = strdup(pl->p.value);
-							resObj->u.getRes->params[i][k].type = pl->p.type;
-						}
-						free_param_t_list(pList);
-
-						resObj->retStatus[i] = ret;
-						Print("Response:> retStatus[%d] = %d\n", i, resObj->retStatus[i]);
-					}
-					else
-					{
-						resObj->retStatus[i] = WDMP_ERR_INVALID_PARAMETER_NAME;
-						Print("Response:> retStatus[%d] = %d\n", i, resObj->retStatus[i]);
-					}
-
-				}
-				else /* Query for individual parameter. Not wildcard */
-				{
-					/* query for individual parameter. Stop at first find. */
-
-					count = cJSON_GetArraySize(paramList);
-					// look through each param for the DB for a match. Stop at first match
-					for (j = 0; j < count; j++)
-					{
-						obj = cJSON_GetArrayItem(paramList, j);
-						if ((NULL != obj) && (cJSON_GetObjectItem(obj, "name") != NULL) && (strcmp(reqObj->u.getReq->paramNames[i], cJSON_GetObjectItem(obj, "name")->valuestring) == 0))
-						{
-							Info("Found :  \"%s\"\n", reqObj->u.getReq->paramNames[i]);
-
-							resObj->u.getRes->params[i] = (param_t *) malloc(sizeof(param_t));
-							if(resObj->u.getRes->params[i] == NULL)
-							{
-								Error("malloc() failed !!!\n");
-								return;
-							}
-
-							resObj->u.getRes->params[i][0].name = strdup(cJSON_GetObjectItem(obj, "name")->valuestring);
-
-							if(cJSON_GetObjectItem(obj, "value"))
-							{
-								resObj->u.getRes->params[i][0].value = strdup(cJSON_GetObjectItem(obj, "value")->valuestring);
-								Info("Value :  \"%s\"\n", resObj->u.getRes->params[i][0].value);
-							}
-
-							if(cJSON_GetObjectItem(obj, "type"))
-							{
-								resObj->u.getRes->params[i][0].type = cJSON_GetObjectItem(obj, "type")->valueint;
-								Info("Type  :  %d\n", resObj->u.getRes->params[i][0].type);
-							}
-
-							retParamCnt = 1;
-							break;
-						}
-					}
-
-					if (retParamCnt)
-					{
-						resObj->u.getRes->paramNames[i] = reqObj->u.getReq->paramNames[i];
-						Print("Response:> paramNames[%d] = %s\n", i, resObj->u.getRes->paramNames[i]);
-
-						resObj->u.getRes->retParamCnt[i] = 1;
-						Print("Response:> retParamCnt[%d] = %zu\n", i, resObj->u.getRes->retParamCnt[i]);
-
-						resObj->retStatus[i] = ret;
-						Print("Response:> retStatus[%d] = %d\n", i, resObj->retStatus[i]);
-					}
-					else
-					{
-						resObj->retStatus[i] = WDMP_ERR_INVALID_PARAMETER_NAME;
-						Print("Response:> retStatus[%d] = %d\n", i, resObj->retStatus[i]);
-					}
-				}
-
-			}
-
+			processGETRequest(paramList, reqObj, resObj, resDelay);
 		}
 		/**===================================== GET_ATTRIBUTES =========================================**/
 		else if (reqObj->reqType == GET_ATTRIBUTES)
@@ -530,6 +624,7 @@ static void processRequest(char *reqPayload, char **resPayload)
 				Print("Response:> retStatus[%d] = %d\n", i, resObj->retStatus[i]);
 			}
 		}
+		/**===================================== SET or SET_ATTRIBUTES =========================================**/
 		else if ((reqObj->reqType == SET) || (reqObj->reqType == SET_ATTRIBUTES))
 		{
 			Print("Request:> ParamCount = %zu\n", reqObj->u.setReq->paramCnt);
@@ -601,6 +696,8 @@ static void processRequest(char *reqPayload, char **resPayload)
 	{
 		wdmp_free_res_struct(resObj);
 	}
+
+	return;
 }
 
 /*----------------------------------------------------------------------------*/
@@ -646,24 +743,20 @@ void *parodus_receive_wait()
 
 			Info("Request message : %s\n", (char * )wrp_msg->u.req.payload);
 
-			processRequest((char *) wrp_msg->u.req.payload,
-					((char **) (&(res_wrp_msg->u.req.payload))));
+			int response_delay = 0;
+			processRequest((char *) wrp_msg->u.req.payload, ((char **) (&(res_wrp_msg->u.req.payload))), &response_delay);
 
-			Info("Response payload is %s\n",
-					(char * )(res_wrp_msg->u.req.payload));
-			res_wrp_msg->u.req.payload_size = strlen(
-					res_wrp_msg->u.req.payload);
+			Info("Response payload is %s\n", (char * )(res_wrp_msg->u.req.payload));
+
+			res_wrp_msg->u.req.payload_size = strlen(res_wrp_msg->u.req.payload);
 			res_wrp_msg->msg_type = wrp_msg->msg_type;
 			res_wrp_msg->u.req.source = wrp_msg->u.req.dest;
 			res_wrp_msg->u.req.dest = wrp_msg->u.req.source;
-			res_wrp_msg->u.req.transaction_uuid =
-					wrp_msg->u.req.transaction_uuid;
-			contentType = (char *) malloc(
-					sizeof(char) * (strlen(CONTENT_TYPE_JSON) + 1));
+			res_wrp_msg->u.req.transaction_uuid = wrp_msg->u.req.transaction_uuid;
+			contentType = (char *) malloc(sizeof(char) * (strlen(CONTENT_TYPE_JSON) + 1));
 			if (contentType)
 			{
-				strncpy(contentType, CONTENT_TYPE_JSON,
-						strlen(CONTENT_TYPE_JSON) + 1);
+				strncpy(contentType, CONTENT_TYPE_JSON, strlen(CONTENT_TYPE_JSON) + 1);
 				res_wrp_msg->u.req.content_type = contentType;
 			}
 			else
@@ -674,6 +767,13 @@ void *parodus_receive_wait()
 				break;
 			}
 
+			/*
+			 * If delay field is set for any parameter, we must delay the response
+			 * for the total duration of the sum of the delays.
+			 */
+			Info("Sleep %d seconds before Response can be sent...\n", response_delay);
+			sleep(response_delay);
+
 			int sendStatus = libparodus_send(mock_tr181_instance, res_wrp_msg);
 			Print("sendStatus is %d\n", sendStatus);
 			if (sendStatus == 0)
@@ -682,8 +782,7 @@ void *parodus_receive_wait()
 			}
 			else
 			{
-				Error("libparodus_send() Failed to send message: '%s'\n",
-						libparodus_strerror(sendStatus));
+				Error("libparodus_send() Failed to send message: '%s'\n", libparodus_strerror(sendStatus));
 			}
 			wrp_free_struct(res_wrp_msg);
 		}
