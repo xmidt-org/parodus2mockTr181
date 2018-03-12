@@ -655,7 +655,7 @@ static void processSETRequest(cJSON *jCache, req_struct *reqObj, res_struct *res
 		{
 			obj = cJSON_GetArrayItem(jCache, j);
 			/*
-			 * Check if matching param name found
+			 * Check if matching param name found in cache obj
 			 */
 			if (strcmp(reqObj->u.setReq->param[i].name, cJSON_GetObjectItem(obj, "name")->valuestring) == 0)
 			{
@@ -664,11 +664,19 @@ static void processSETRequest(cJSON *jCache, req_struct *reqObj, res_struct *res
 				 */
 				if(isParamWritable(obj))
 				{
-					obj = cJSON_CreateObject(); //TODO : should I delete this? cJSON doesn't specify
-					cJSON_AddStringToObject(obj, "name", reqObj->u.setReq->param[i].name);
-					cJSON_AddStringToObject(obj, "value", reqObj->u.setReq->param[i].value);
-					cJSON_AddNumberToObject(obj, "type", reqObj->u.setReq->param[i].type);
-					cJSON_ReplaceItemInArray(jCache, j, obj); //TODO : does cJSON make a copy of obj? can I delete obj?
+					cJSON* newobj = cJSON_CreateObject(); //TODO : should I delete this? cJSON doesn't specify
+					cJSON_AddStringToObject(newobj, "name", reqObj->u.setReq->param[i].name);
+					cJSON_AddStringToObject(newobj, "value", reqObj->u.setReq->param[i].value);
+					cJSON_AddNumberToObject(newobj, "type", reqObj->u.setReq->param[i].type);
+					if(cJSON_GetObjectItem(obj, "access"))
+					{
+						cJSON_AddStringToObject(newobj, "access", cJSON_GetObjectItem(obj, "access")->valuestring);
+					}
+					if (cJSON_GetObjectItem(obj, "delay"))
+					{
+						cJSON_AddNumberToObject(newobj, "delay", cJSON_GetObjectItem(obj, "delay")->valueint);
+					}
+					cJSON_ReplaceItemInArray(jCache, j, newobj); //TODO : does cJSON make a copy of newobj? can I delete newobj?
 				}
 				else
 				{
