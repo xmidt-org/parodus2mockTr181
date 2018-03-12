@@ -146,7 +146,7 @@ int mock_tr181_db_read(char **data)
 
 	fclose(fp);
 	Print("mock_tr181_db_read() Returned Success\n");
-	//g_tr181_dirty_flag = 0;
+
 	return 1;
 }
 

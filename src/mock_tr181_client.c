@@ -677,6 +677,7 @@ static void processSETRequest(cJSON *jCache, req_struct *reqObj, res_struct *res
 						cJSON_AddNumberToObject(newobj, "delay", cJSON_GetObjectItem(obj, "delay")->valueint);
 					}
 					cJSON_ReplaceItemInArray(jCache, j, newobj); //TODO : does cJSON make a copy of newobj? can I delete newobj?
+					Info("SET : Found \"%s\" and updated!\n", reqObj->u.setReq->param[i].name);
 				}
 				else
 				{
@@ -691,7 +692,6 @@ static void processSETRequest(cJSON *jCache, req_struct *reqObj, res_struct *res
 
 		if (matchFlag == 1)
 		{
-			Info("SET : Found \"%s\" and updated!\n", reqObj->u.setReq->param[i].name);
 			resObj->u.paramRes->params[i].name = strdup(reqObj->u.setReq->param[i].name);
 			Print("Response:> params[%d].name = %s\n", i, resObj->u.paramRes->params[i].name);
 
