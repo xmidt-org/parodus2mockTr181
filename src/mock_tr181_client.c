@@ -535,7 +535,7 @@ static void processGETRequest(cJSON *jData, req_struct *reqObj, res_struct *resO
  */
 static void processSETRequest(cJSON *jCache, req_struct *reqObj, res_struct *resObj)
 {
-	int reqParamCount = 0, resParamCount = 0, count = 0, matchFlag = 0, i = 0, j = 0, k = 0;
+	int reqParamCount = 0, count = 0, matchFlag = 0, i = 0, j = 0;
 	cJSON *obj = NULL;
 	WDMP_STATUS ret = WDMP_SUCCESS;
 
@@ -729,7 +729,7 @@ static void processRequest(char *reqPayload, char **resPayload, int* resDelay)
 		/**===================================== SET ==========================================**/
 		else if(reqObj->reqType == SET)
 		{
-			processSETRequest(paramList, reqObj, resObj, resDelay);
+			processSETRequest(paramList, reqObj, resObj);
 		}
 		/**===================================== GET_ATTRIBUTES ===============================**/
 		else if (reqObj->reqType == GET_ATTRIBUTES)
