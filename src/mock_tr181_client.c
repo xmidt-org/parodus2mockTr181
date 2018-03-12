@@ -204,6 +204,48 @@ static int isWildcardQuery(char *req)
 	return 0;
 }
 
+static int isParamWritable(cJSON* obj)
+{
+	/*
+	 * Check if the parameter is writable by checking the 'access' field
+	 * field 'access' should be present and set to 'w' or 'rw' or 'wr', otherwise not writable
+	 */
+	if(obj)
+	{
+		cJSON *access = cJSON_GetObjectItem(obj, "access");
+		if (access != NULL && access->valuestring != NULL
+				&& ( (strncmp(access->valuestring, "w", 1) == 0)
+					||(strncmp(access->valuestring, "wr", 2) == 0)
+					||(strncmp(access->valuestring, "rw", 2) == 0) ))
+		{
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
+static int isParamReadable(cJSON* obj)
+{
+	/*
+	 * Check if the parameter is readable by checking the 'access' field
+	 * field 'access' should be present and set to 'r' or 'rw' or 'wr', otherwise not readable
+	 */
+	if(obj)
+	{
+		cJSON *access = cJSON_GetObjectItem(obj, "access");
+		if (access != NULL && access->valuestring != NULL
+				&& ( (strncmp(access->valuestring, "r", 1) == 0)
+					||(strncmp(access->valuestring, "wr", 2) == 0)
+					||(strncmp(access->valuestring, "rw", 2) == 0) ))
+		{
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
 /*-----------------------------------------------------------------------------------------------*/
 /*
  * process GET Request
@@ -448,11 +490,8 @@ static void processGETRequest(cJSON *jData, req_struct *reqObj, res_struct *resO
 				{
 					/*
 					 * Check if the parameter is readable by checking the 'access' field
-					 * 'access' should be 'r' or 'rw', otherwise ignore this parameter
 					 */
-					cJSON *access = cJSON_GetObjectItem(obj, "access");
-					if (access != NULL && access->valuestring != NULL
-							&& ((strncmp(access->valuestring, "r", 1) == 0) || (strncmp(access->valuestring, "wr", 2) == 0)))
+					if(isParamReadable(obj))
 					{
 						Info("Found :  \"%s\"\n", reqObj->u.getReq->paramNames[i]);
 
@@ -488,7 +527,7 @@ static void processGETRequest(cJSON *jData, req_struct *reqObj, res_struct *resO
 					}
 					else
 					{
-						Info("Found non-readable param: \"%s\" \n", reqObj->u.getReq->paramNames[i]);
+						Error("GET Request:> param \"%s\" NOT Readable !!\n", reqObj->u.getReq->paramNames[i]);
 					}
 				}
 			}
@@ -609,19 +648,36 @@ static void processSETRequest(cJSON *jCache, req_struct *reqObj, res_struct *res
 		}
 
 		count = cJSON_GetArraySize(jCache);
+		/*
+		 * Check each parameter in the db cache
+		 */
 		for (j = 0; j < count; j++)
 		{
 			obj = cJSON_GetArrayItem(jCache, j);
+			/*
+			 * Check if matching param name found
+			 */
 			if (strcmp(reqObj->u.setReq->param[i].name, cJSON_GetObjectItem(obj, "name")->valuestring) == 0)
 			{
-				obj = cJSON_CreateObject(); //TODO : should I delete this? cJSON doesn't specify
-				cJSON_AddStringToObject(obj, "name", reqObj->u.setReq->param[i].name);
-				cJSON_AddStringToObject(obj, "value", reqObj->u.setReq->param[i].value);
-				cJSON_AddNumberToObject(obj, "type", reqObj->u.setReq->param[i].type);
-				cJSON_ReplaceItemInArray(jCache, j, obj); //TODO : does cJSON make a copy of obj? can I delete obj?
-
+				/*
+				 * Check if the parameter is writable by checking the 'access' field
+				 */
+				if(isParamWritable(obj))
+				{
+					obj = cJSON_CreateObject(); //TODO : should I delete this? cJSON doesn't specify
+					cJSON_AddStringToObject(obj, "name", reqObj->u.setReq->param[i].name);
+					cJSON_AddStringToObject(obj, "value", reqObj->u.setReq->param[i].value);
+					cJSON_AddNumberToObject(obj, "type", reqObj->u.setReq->param[i].type);
+					cJSON_ReplaceItemInArray(jCache, j, obj); //TODO : does cJSON make a copy of obj? can I delete obj?
+				}
+				else
+				{
+					Error("SET Request:> param \"%s\" NOT writable !!\n", reqObj->u.setReq->param[i].name);
+					resObj->retStatus[i] = WDMP_ERR_NOT_WRITABLE;
+					Print("Response:> retStatus[%d] = %d\n", i, resObj->retStatus[i]);
+				}
 				matchFlag = 1;
-				break; // once updated, break and go to next reqObj->u.setReq->param[i]
+				break; // once found match, break and go to next reqObj->u.setReq->param[i]
 			}
 		}
 
