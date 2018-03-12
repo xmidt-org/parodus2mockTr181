@@ -19,12 +19,21 @@
 #include "mock_tr181_adapter.h"
 
 static char* g_mock_tr181_db_name = NULL;
+
+//cache data instead of reading every time from filesystem
+// as per requirement I am making the filesystem db Read only
+//
+//static int g_tr181_dirty_flag = 0;
+static cJSON* g_mock_tr181_db_cache = NULL;
 /*----------------------------------------------------------------------------*/
 /*                 External interface functions                               */
 /*----------------------------------------------------------------------------*/
 /*
  * returns 0 - failure
  *         1 - success
+ *
+ * Init will set the db file name
+ *
  */
 
 int mock_tr181_db_init(char* db_name)
@@ -33,6 +42,13 @@ int mock_tr181_db_init(char* db_name)
 	{
 		free(g_mock_tr181_db_name);
 		g_mock_tr181_db_name = NULL;
+	}
+
+	if(g_mock_tr181_db_cache)
+	{
+		//  allocated by cJSON_Parse
+		cJSON_Delete(g_mock_tr181_db_cache);
+		g_mock_tr181_db_cache = NULL;
 	}
 
 	if(db_name)
@@ -48,6 +64,28 @@ int mock_tr181_db_init(char* db_name)
 
 	return 1;
 }
+
+cJSON* mock_tr181_db_get_instance()
+{
+	if(g_mock_tr181_db_cache == NULL)
+	{
+		char *dbData = NULL;
+
+		if (mock_tr181_db_read(&dbData))
+		{
+			Info("Data from DB: %s\n", dbData);
+			g_mock_tr181_db_cache = cJSON_Parse(dbData); //paramList contains TR181 db
+		}
+		else
+		{
+			Error("Failed to read from DB! creating an empty db instance.\n");
+			g_mock_tr181_db_cache = cJSON_CreateArray();
+		}
+	}
+
+	return g_mock_tr181_db_cache; //TODO: How to protect this from clients accidently deleting/corrupting?
+}
+
 
 /*
  * returns 0 - failure
@@ -108,10 +146,13 @@ int mock_tr181_db_read(char **data)
 
 	fclose(fp);
 	Print("mock_tr181_db_read() Returned Success\n");
+	//g_tr181_dirty_flag = 0;
 	return 1;
 }
 
 /*
+ * * NOT USED - We dont support write to file system
+ * * as per current requirement
  * returns 0 - failure
  *         1 - success
  */
@@ -146,3 +187,15 @@ int mock_tr181_db_write(char *data)
 	Print("mock_tr181_db_write() Returned Success\n");
 	return 1;
 }
+
+/*
+int mock_tr181_is_dirty()
+{
+	return g_tr181_dirty_flag;
+}
+
+int mock_tr181_make_dirty()
+{
+	g_tr181_dirty_flag = 1;
+}
+*/

@@ -204,8 +204,18 @@ static int isWildcardQuery(char *req)
 	return 0;
 }
 
-/* From cData get all parameters requested by reqObj and populate them into resObj
- * only if the parameter is allowed to be read.
+/*-----------------------------------------------------------------------------------------------*/
+/*
+ * process GET Request
+ *
+ *	 cJSON *jData - JSON DB from which we need to read the requested parameters
+ *	 req_struct *reqObj - this is the incoming request. Contains request for both parameters
+ *	                      and objects (wildcard)
+ *	 res_struct *resObj - this is the output response
+ *	 int *resDelay - response delay. Indicates how much time should we wait before sending response.
+ *
+ * From json cData (read from tr181 db file system) get all parameters requested by reqObj
+ * and populate them into resObj if and only if the parameter is allowed to be read.
  * Calculate response delay by adding the individual delay for each param if found.
  */
 static void processGETRequest(cJSON *jData, req_struct *reqObj, res_struct *resObj, int *resDelay)
@@ -311,6 +321,7 @@ static void processGETRequest(cJSON *jData, req_struct *reqObj, res_struct *resO
 			{
 				Error("The Database seems to be empty! please check.\n");
 			}
+
 			for (j = 0; j < count; j++)
 			{
 				obj = cJSON_GetArrayItem(jData, j);
@@ -507,6 +518,157 @@ static void processGETRequest(cJSON *jData, req_struct *reqObj, res_struct *resO
 	return;
 }
 
+/*-----------------------------------------------------------------------------------------------*/
+/*
+ * process SET Request
+ *  The SET request will update the param/value/type from req_struct into the database
+ *  specified by jCache. If the specified parameter is not present a error response is
+ *  sent back. The updated informantion in NOT written to the filesystem DB
+ *  (not persistent) according to the current requirements. The response is populated
+ *  in res_struct to be sent back to the requester.
+ *
+ *	 cJSON *jCache - JSON DB in cache that we need to update.
+ *	 req_struct *reqObj - this is the incoming request containing param/value/type data
+ *	                      to be updated
+ *	 res_struct *resObj - response out. contains success or error codes
+ *
+ */
+static void processSETRequest(cJSON *jCache, req_struct *reqObj, res_struct *resObj)
+{
+	int reqParamCount = 0, resParamCount = 0, count = 0, matchFlag = 0, i = 0, j = 0, k = 0;
+	cJSON *obj = NULL;
+	WDMP_STATUS ret = WDMP_SUCCESS;
+
+	//validate reqObj
+	if (reqObj == NULL || resObj == NULL || reqObj->reqType != SET || reqObj->u.setReq == NULL)
+	{
+		Error("processSETRequest() invalid input!\n");
+		return;
+	}
+
+	Print("Request:> ParamCount = %zu\n", reqObj->u.setReq->paramCnt);
+	resObj->paramCnt = reqObj->u.setReq->paramCnt;
+	Print("Response:> paramCnt = %zu\n", resObj->paramCnt);
+
+	resObj->retStatus = (WDMP_STATUS *) malloc(sizeof(WDMP_STATUS) * resObj->paramCnt);
+	if (resObj->retStatus == NULL)
+	{
+		Error("processSETRequest() - malloc failed !!!\n");
+		return;
+	}
+
+	resObj->timeSpan = NULL;
+
+	reqParamCount = (int) reqObj->u.setReq->paramCnt;
+	resObj->u.paramRes = (param_res_t *) malloc(sizeof(param_res_t));
+	if (resObj->u.paramRes)
+	{
+		memset(resObj->u.paramRes, 0, sizeof(param_res_t));
+	}
+	else
+	{
+		Error("processSETRequest() - malloc failed !!!\n");
+		return;
+	}
+
+	resObj->u.paramRes->params = (param_t *) malloc(sizeof(param_t) * reqParamCount);
+	if (resObj->u.paramRes->params)
+	{
+		memset(resObj->u.paramRes->params, 0, sizeof(param_t) * reqParamCount);
+	}
+	else
+	{
+		Error("processSETRequest() - malloc failed !!!\n");
+		return;
+	}
+
+	if (reqObj->u.setReq->param == NULL)
+	{
+		Error("SET Request with invalid param struct!!! \n");
+	}
+
+	for (i = 0; i < reqParamCount; i++)
+	{
+		matchFlag = 0;
+		/* *
+		 * Note: reqObj->u.setReq->param is assumed to be a pointer to an array of param_t
+		 * where the size of the array is specified by reqObj->u.setReq->paramCnt
+		 * wdmp-c defines these structs, we dont have a way to validate these.
+		 */
+
+		Info("SET Request:> param[%d].name  = \"%s\"\n", i, reqObj->u.setReq->param[i].name);
+		Info("SET Request:> param[%d].value = %s\n", i, reqObj->u.setReq->param[i].value);
+		Info("SET Request:> param[%d].type  = %d\n", i, reqObj->u.setReq->param[i].type);
+
+		if (reqObj->u.setReq->param[i].name == NULL || strncmp(reqObj->u.setReq->param[i].name, "", 1) == 0)
+		{
+			Error("Invalid parameter name !! \n");
+			resObj->retStatus[i] = WDMP_ERR_INVALID_PARAMETER_NAME;
+			Print("Response:> retStatus[%d] = %d\n", i, resObj->retStatus[i]);
+			continue; //continue to next SET Request parameter
+		}
+
+		count = cJSON_GetArraySize(jCache);
+		for (j = 0; j < count; j++)
+		{
+			obj = cJSON_GetArrayItem(jCache, j);
+			if (strcmp(reqObj->u.setReq->param[i].name, cJSON_GetObjectItem(obj, "name")->valuestring) == 0)
+			{
+				obj = cJSON_CreateObject(); //TODO : should I delete this? cJSON doesn't specify
+				cJSON_AddStringToObject(obj, "name", reqObj->u.setReq->param[i].name);
+				cJSON_AddStringToObject(obj, "value", reqObj->u.setReq->param[i].value);
+				cJSON_AddNumberToObject(obj, "type", reqObj->u.setReq->param[i].type);
+				cJSON_ReplaceItemInArray(jCache, j, obj); //TODO : does cJSON make a copy of obj? can I delete obj?
+
+				matchFlag = 1;
+				break; // once updated, break and go to next reqObj->u.setReq->param[i]
+			}
+		}
+
+		if (matchFlag == 1)
+		{
+			Info("SET : Found \"%s\" and updated!\n", reqObj->u.setReq->param[i].name);
+			resObj->u.paramRes->params[i].name = strdup(reqObj->u.setReq->param[i].name);
+			Print("Response:> params[%d].name = %s\n", i, resObj->u.paramRes->params[i].name);
+
+			resObj->u.paramRes->params[i].value = NULL;
+			resObj->u.paramRes->params[i].type = 0;
+
+			resObj->retStatus[i] = ret;
+			Print("Response:> retStatus[%d] = %d\n", i, resObj->retStatus[i]);
+		}
+		else
+		{
+			Info("SET : Did NOT find \"%s\" !!\n", reqObj->u.setReq->param[i].name);
+			resObj->u.paramRes->params[i].name = strdup(reqObj->u.setReq->param[i].name);
+			Print("Response:> params[%d].name = %s\n", i, resObj->u.paramRes->params[i].name);
+
+			resObj->retStatus[i] = WDMP_ERR_INVALID_PARAMETER_NAME;
+			Print("Response:> retStatus[%d] = %d\n", i, resObj->retStatus[i]);
+		}
+	}
+
+	char* addData = cJSON_Print(jCache);
+	if (addData)
+	{
+		Print("cache after update : %s\n", addData);
+		free(addData);
+		addData = NULL;
+	}
+
+	/* do not update filesystem - as per req
+	 status = mock_tr181_db_write(addData);
+	 if (status == 1)
+	 {
+	 Info("Data is successfully added to DB\n");
+	 }
+	 else
+	 {
+	 Error("Failed to add data to DB\n");
+	 }*/
+	return;
+}
+
 static void processRequest(char *reqPayload, char **resPayload, int* resDelay)
 {
 	req_struct *reqObj = NULL;
@@ -516,34 +678,27 @@ static void processRequest(char *reqPayload, char **resPayload, int* resDelay)
 	int reqParamCount = 0, i = 0, matchFlag = 0, count = 0, j = 0;
 	WDMP_STATUS ret = WDMP_SUCCESS;
 
-	/* Parse Request Payload.
+	/*
+	 * Parse Request Payload.
 	 * Convert JSON Payload into struct req_struct
 	 */
 	wdmp_parse_request(reqPayload, &reqObj);
-	cJSON *paramList = NULL;
-	char *dbData = NULL, *addData = NULL;
 
-	/* Read TR181 DB file.
-	 * get all the TR181 params from db file.
-	 * Note: db in json format
+	/*
+	 * Get JSON instance of the TR181 db from filesystem/cache
 	 */
+	cJSON *paramList = mock_tr181_db_get_instance();
 
-	int status = mock_tr181_db_read(&dbData);
-
-	if (status == 1)
+	if (NULL == paramList)
 	{
-		Info("Data from DB: %s\n", dbData);
-		paramList = cJSON_Parse(dbData); //paramList contains TR181 db
-	}
-	else
-	{
-		Error("Failed to read from DB\n");
+		Error("Failed to get json db. creating an empty one..\n");
 		paramList = cJSON_CreateArray();
 	}
 
-	/* Create res_struct
+	/*
+	 * Create res_struct
 	 *   - allocate res_struct. gets tricky for wildcard Req, since response size is variable.
-	 *   - populate values for each req param
+	 *   - populate variable number of param/values for each req param
 	 *   - set paramCnt and retParamCnt accordingly
 	 */
 	if (reqObj != NULL)
@@ -571,7 +726,12 @@ static void processRequest(char *reqPayload, char **resPayload, int* resDelay)
 		{
 			processGETRequest(paramList, reqObj, resObj, resDelay);
 		}
-		/**===================================== GET_ATTRIBUTES =========================================**/
+		/**===================================== SET ==========================================**/
+		else if(reqObj->reqType == SET)
+		{
+			processSETRequest(paramList, reqObj, resObj, resDelay);
+		}
+		/**===================================== GET_ATTRIBUTES ===============================**/
 		else if (reqObj->reqType == GET_ATTRIBUTES)
 		{
 			Print("Request:> ParamCount = %zu\n", reqObj->u.getReq->paramCnt);
@@ -599,10 +759,13 @@ static void processRequest(char *reqPayload, char **resPayload, int* resDelay)
 
 						strcpy(resObj->u.paramRes->params[i].name, cJSON_GetObjectItem(obj, "name")->valuestring);
 						Print("Response:> params[%d].name = %s\n", i, resObj->u.paramRes->params[i].name);
+
 						strcpy(resObj->u.paramRes->params[i].value, cJSON_GetObjectItem(obj, "notify")->valuestring);
 						Print("Response:> params[%d].value = %s\n", i, resObj->u.paramRes->params[i].value);
+
 						resObj->u.paramRes->params[i].type = WDMP_INT;
 						Print("Response:> params[%d].type = %d\n", i, resObj->u.paramRes->params[i].type);
+
 						matchFlag = 1;
 						break;
 					}
@@ -624,8 +787,8 @@ static void processRequest(char *reqPayload, char **resPayload, int* resDelay)
 				Print("Response:> retStatus[%d] = %d\n", i, resObj->retStatus[i]);
 			}
 		}
-		/**===================================== SET or SET_ATTRIBUTES =========================================**/
-		else if ((reqObj->reqType == SET) || (reqObj->reqType == SET_ATTRIBUTES))
+		/**===================================== SET_ATTRIBUTES =========================================
+		else if (reqObj->reqType == SET_ATTRIBUTES)
 		{
 			Print("Request:> ParamCount = %zu\n", reqObj->u.setReq->paramCnt);
 			resObj->paramCnt = reqObj->u.setReq->paramCnt;
@@ -646,15 +809,7 @@ static void processRequest(char *reqPayload, char **resPayload, int* resDelay)
 
 				cJSON_AddItemToArray(paramList, obj = cJSON_CreateObject());
 				cJSON_AddStringToObject(obj, "name", reqObj->u.setReq->param[i].name);
-				if (reqObj->reqType == SET)
-				{
-					cJSON_AddStringToObject(obj, "value", reqObj->u.setReq->param[i].value);
-					cJSON_AddNumberToObject(obj, "type", reqObj->u.setReq->param[i].type);
-				}
-				else
-				{
-					cJSON_AddStringToObject(obj, "notify", reqObj->u.setReq->param[i].value);
-				}
+				cJSON_AddStringToObject(obj, "notify", reqObj->u.setReq->param[i].value);
 
 				resObj->u.paramRes->params[i].name = (char *) malloc(sizeof(char) * 512);
 				strcpy(resObj->u.paramRes->params[i].name, reqObj->u.setReq->param[i].name);
@@ -666,11 +821,10 @@ static void processRequest(char *reqPayload, char **resPayload, int* resDelay)
 				Print("Response:> retStatus[%d] = %d\n", i, resObj->retStatus[i]);
 			}
 
-			addData = cJSON_Print(paramList);
+			char* addData = cJSON_Print(paramList);
 			Print("addData : %s\n", addData);
 
 			status = mock_tr181_db_write(addData);
-
 			if (status == 1)
 			{
 				Info("Data is successfully added to DB\n");
@@ -679,6 +833,10 @@ static void processRequest(char *reqPayload, char **resPayload, int* resDelay)
 			{
 				Error("Failed to add data to DB\n");
 			}
+		}*/
+		else
+		{
+			Error("Unsupported Request Type : %d !!!\n", reqObj->reqType);
 		}
 	}
 
@@ -692,6 +850,7 @@ static void processRequest(char *reqPayload, char **resPayload, int* resDelay)
 	{
 		wdmp_free_req_struct(reqObj);
 	}
+
 	if (NULL != resObj)
 	{
 		wdmp_free_res_struct(resObj);
