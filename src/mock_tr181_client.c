@@ -576,7 +576,6 @@ static void processSETRequest(cJSON *jCache, req_struct *reqObj, res_struct *res
 {
 	int reqParamCount = 0, count = 0, matchFlag = 0, i = 0, j = 0;
 	cJSON *obj = NULL;
-	WDMP_STATUS ret = WDMP_SUCCESS;
 
 	//validate reqObj
 	if (reqObj == NULL || resObj == NULL || reqObj->reqType != SET || reqObj->u.setReq == NULL)
@@ -678,12 +677,12 @@ static void processSETRequest(cJSON *jCache, req_struct *reqObj, res_struct *res
 					}
 					cJSON_ReplaceItemInArray(jCache, j, newobj); //TODO : does cJSON make a copy of newobj? can I delete newobj?
 					Info("SET : Found \"%s\" and updated!\n", reqObj->u.setReq->param[i].name);
+					resObj->retStatus[i] = WDMP_SUCCESS;
 				}
 				else
 				{
 					Error("SET Request:> param \"%s\" NOT writable !!\n", reqObj->u.setReq->param[i].name);
 					resObj->retStatus[i] = WDMP_ERR_NOT_WRITABLE;
-					Print("Response:> retStatus[%d] = %d\n", i, resObj->retStatus[i]);
 				}
 				matchFlag = 1;
 				break; // once found match, break and go to next reqObj->u.setReq->param[i]
@@ -698,7 +697,6 @@ static void processSETRequest(cJSON *jCache, req_struct *reqObj, res_struct *res
 			resObj->u.paramRes->params[i].value = NULL;
 			resObj->u.paramRes->params[i].type = 0;
 
-			resObj->retStatus[i] = ret;
 			Print("Response:> retStatus[%d] = %d\n", i, resObj->retStatus[i]);
 		}
 		else
