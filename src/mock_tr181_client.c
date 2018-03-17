@@ -183,8 +183,7 @@ void startParodusReceiveThread()
 	}
 	else
 	{
-		Info("Parodus Receive wait thread created Successfully %d\n",
-				(int ) threadId);
+		Info("Parodus Receive wait thread created Successfully %p\n", threadId);
 	}
 }
 
