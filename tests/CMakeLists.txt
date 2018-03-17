@@ -30,10 +30,10 @@ target_link_libraries (simple  gcov  cunit
                        -ltrower-base64
                        -lm
                        -lcimplog
+                       -llibparodus
                        -lnanomsg
                        -lcjson
                        -lpthread
-                       -llibparodus
                        -lrt 
                        )
 
