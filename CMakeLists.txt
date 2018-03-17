@@ -151,7 +151,7 @@ ExternalProject_Add(libparodus
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/_prefix/libparodus
     GIT_REPOSITORY https://github.com/Comcast/libparodus.git
     GIT_TAG "master"
-    CMAKE_ARGS += -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR}
+    CMAKE_ARGS += -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} -DBUILD_TESTING=OFF
     		  -DMAIN_PROJ_BUILD=ON
     		  -DMAIN_PROJ_LIB_PATH=${LIBRARY_DIR}
 		  -DMAIN_PROJ_LIB64_PATH=${LIBRARY_DIR64}

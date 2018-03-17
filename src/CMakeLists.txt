@@ -26,10 +26,10 @@ target_link_libraries (${PROJ_MOCK_TR181}
                        -ltrower-base64
                        -lm
                        -lcimplog
-                       -lnanomsg
-                       -lcjson
-                       -lpthread
                        -llibparodus
+                       -lcjson
+                       -lnanomsg
+                       -lpthread
                        -lrt
                        )
     
