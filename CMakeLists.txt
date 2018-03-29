@@ -161,6 +161,7 @@ ExternalProject_Add(libparodus
 )
 add_library(liblibparodus STATIC SHARED IMPORTED)
 add_dependencies(liblibparodus libparodus)
+execute_process(COMMAND xxd -i ${CMAKE_SOURCE_DIR}/mock_tr181.json ${CMAKE_SOURCE_DIR}/src/mock_tr181_db.h)
 
 endif ()
 
