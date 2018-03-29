@@ -58,8 +58,8 @@ int mock_tr181_db_init(char* db_name)
 	}
 	else
 	{
-		Error("Mock DB name invalid !!\n");
-		return 0;
+		Info("Mock DB name Not specified on command line, trying %s\n", P2M_DB_FILE);
+		g_mock_tr181_db_name = strdup(db_name);
 	}
 
 	return 1;
@@ -109,15 +109,8 @@ int mock_tr181_db_read(char **data)
 	}
 	else
 	{
-		Info("Mock db file not specified in options. Using default db file: %s\n", P2M_DB_FILE);
-		fp = fopen(P2M_DB_FILE, "r");
-		if (fp == NULL)
-		{
-			Error("Failed to open db file \"%s\"\n", P2M_DB_FILE);
-			return 0;
-		}
-
-		Info("Opened default db file \"%s\"\n", P2M_DB_FILE);
+		Error("No db file found or specified\n");
+		return 0;
 	}
 
 	fseek(fp, 0, SEEK_END);  //set file position to end
