@@ -67,8 +67,13 @@ const char *rdk_logger_module_fetch(void)
 	return "LOG.RDK.MOCK_TR181";
 }
 
-void connect_parodus_default()
+void connect_parodus_default(bool bypass)
 {
+    if (bypass) {
+        Info("Unit tests ignore parodus\n");
+        return;
+    }
+
 	Info("Using default values for Parodus PORT and Client Port.\n");
 
 	libpd_cfg_t cfg = {
@@ -104,7 +109,7 @@ void connect_parodus(char* parodus_port, char* client_port)
 {
 	if(parodus_port == NULL &&  client_port == NULL)
 	{
-		return connect_parodus_default();
+		return connect_parodus_default(false);
 	}
 
 	char str_parodus_url[128] = {};

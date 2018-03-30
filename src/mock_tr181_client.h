@@ -58,7 +58,8 @@
 /*                             Function Prototypes                            */
 /*----------------------------------------------------------------------------*/
 void connect_parodus(char* parodus_port, char* client_port);
-void connect_parodus_default();
+/* bypass MUST only be set to true for unit tests which ignore parodus */
+void connect_parodus_default(bool bypass);
 void startParodusReceiveThread();
 
 /*----------------------------------------------------------------------------*/
