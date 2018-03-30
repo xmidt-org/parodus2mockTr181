@@ -730,6 +730,8 @@ static void processSETRequest(cJSON *jCache, req_struct *reqObj, res_struct *res
 	return;
 }
 
+
+
 static void processRequest(char *reqPayload, char **resPayload, int* resDelay)
 {
 	req_struct *reqObj = NULL;
@@ -919,6 +921,7 @@ static void processRequest(char *reqPayload, char **resPayload, int* resDelay)
 
 	return;
 }
+
 
 /*----------------------------------------------------------------------------*/
 /*                             Function Callback                              */

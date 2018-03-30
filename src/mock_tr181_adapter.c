@@ -18,6 +18,16 @@
 #include "mock_tr181_client.h"
 #include "mock_tr181_adapter.h"
 
+/*----------------------------------------------------------------------------*/
+/*                                   Macros                                   */
+/*----------------------------------------------------------------------------*/
+#define P2M_DB_FILE      "../../mock_tr181.json"
+
+/* Declares unsigned char mock_tr181_json[] created from mock_tr181.json
+ via xxd in the make file.
+ */
+#include "mock_tr181_json.h"
+
 static char* g_mock_tr181_db_name = NULL;
 
 //cache data instead of reading every time from filesystem
@@ -58,8 +68,8 @@ int mock_tr181_db_init(char* db_name)
 	}
 	else
 	{
-		Info("Mock DB name Not specified on command line, trying %s\n", P2M_DB_FILE);
-		g_mock_tr181_db_name = strdup(db_name);
+        // Using built-in data base file
+        g_mock_tr181_db_cache = cJSON_Parse((char *) &mock_tr181_json[0]);
 	}
 
 	return 1;
@@ -109,7 +119,7 @@ int mock_tr181_db_read(char **data)
 	}
 	else
 	{
-		Error("No db file found or specified\n");
+		Error("No db file found or specified!\n");
 		return 0;
 	}
 
@@ -142,53 +152,3 @@ int mock_tr181_db_read(char **data)
 
 	return 1;
 }
-
-/*
- * * NOT USED - We dont support write to file system
- * * as per current requirement
- * returns 0 - failure
- *         1 - success
- */
-int mock_tr181_db_write(char *data)
-{
-	Print("mock_tr181_db_write() Entered\n");
-	FILE *fp;
-
-	if(g_mock_tr181_db_name)
-	{
-		fp = fopen(g_mock_tr181_db_name, "w");
-		if (fp == NULL)
-		{
-			Error("Failed to open db file \"%s\"\n", g_mock_tr181_db_name);
-			return 0;
-		}
-	}
-	else
-	{
-		Print("Mock db file not specified in options. Using default db file: %s\n", P2M_DB_FILE);
-		fp = fopen(P2M_DB_FILE, "w");
-		if (fp == NULL)
-		{
-			Error("Failed to open db file \"%s\"\n", P2M_DB_FILE);
-			return 0;
-		}
-	}
-
-	fwrite(data, strlen(data), 1, fp);
-
-	fclose(fp);
-	Print("mock_tr181_db_write() Returned Success\n");
-	return 1;
-}
-
-/*
-int mock_tr181_is_dirty()
-{
-	return g_tr181_dirty_flag;
-}
-
-int mock_tr181_make_dirty()
-{
-	g_tr181_dirty_flag = 1;
-}
-*/
