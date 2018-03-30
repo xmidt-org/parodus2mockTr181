@@ -70,7 +70,7 @@ const char *rdk_logger_module_fetch(void)
 void connect_parodus_default(bool bypass)
 {
     if (bypass) {
-        Info("Unit tests ignore parodus\n");
+        Info("Unit tests ignoring parodus connections ...\n");
         return;
     }
 
