@@ -18,6 +18,9 @@ set(SOURCES mock_tr181_adapter.c mock_tr181_client.c mock_tr181_main.c)
 
 add_executable(${PROJ_MOCK_TR181} ${SOURCES})
 
+execute_process(COMMAND xxd -i mock_tr181.json mock_tr181_json.h
+                WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/src)
+
 target_link_libraries (${PROJ_MOCK_TR181}
                        ${CMAKE_THREAD_LIBS_INIT}
                        -lwrp-c

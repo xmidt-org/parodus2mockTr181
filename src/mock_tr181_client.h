@@ -58,7 +58,8 @@
 /*                             Function Prototypes                            */
 /*----------------------------------------------------------------------------*/
 void connect_parodus(char* parodus_port, char* client_port);
-void connect_parodus_default();
+/* bypass MUST only be set to true for unit tests which ignore parodus */
+void connect_parodus_default(bool bypass);
 void startParodusReceiveThread();
 
 /*----------------------------------------------------------------------------*/
@@ -67,8 +68,9 @@ void startParodusReceiveThread();
 /* none */
 
 /*----------------------------------------------------------------------------*/
-/*                             Internal functions                             */
+/*                             Internal Private functions                     */
 /*----------------------------------------------------------------------------*/
-/* none */
+void processRequest(char *reqPayload, char **resPayload, int* resDelay);
+
 
 #endif /* __MOCK_TR181_CLIENT_H__ */

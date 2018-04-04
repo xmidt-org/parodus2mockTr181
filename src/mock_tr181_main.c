@@ -15,9 +15,21 @@
  *
  */
 
+#include <stdio.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <signal.h>
+#include <assert.h>
+#include <string.h>
 #include <getopt.h>
 #include "mock_tr181_adapter.h"
 #include "mock_tr181_client.h"
+
+
+static void __sig_handler(int sig);
+static void init_signal_handler(void);
+static void _exit_process_(int signum);
+static bool terminate_mock_TR181_client = false;
 
 int main( int argc, char **argv)
 {
@@ -33,6 +45,8 @@ int main( int argc, char **argv)
 	int item = 0, opt_index = 0;
 	char* parodus_port = NULL;
 	char* client_port = NULL;
+    
+    init_signal_handler();
 
 	while (-1 != (item = getopt_long(argc, argv, option_string, options, &opt_index)))
 	{
@@ -82,7 +96,80 @@ int main( int argc, char **argv)
 
 	while (1)  //start startParodusReceiveThread and wait...
 	{
-		sleep(10);
+		sleep(5);
+        if (terminate_mock_TR181_client) {
+            Info("%s terminating!\n", argv[0]);
+            exit(-1);
+        }
 	}
 	return 0;
 }
+
+
+void init_signal_handler(void)
+{
+      signal(SIGTERM, __sig_handler);
+      signal(SIGINT, __sig_handler);
+      signal(SIGUSR1, __sig_handler);
+      signal(SIGUSR2, __sig_handler);
+      signal(SIGSEGV, __sig_handler);
+      signal(SIGBUS, __sig_handler);
+      signal(SIGKILL, __sig_handler);
+      signal(SIGFPE, __sig_handler);
+      signal(SIGILL, __sig_handler);
+      signal(SIGQUIT, __sig_handler);
+      signal(SIGHUP, __sig_handler);
+      signal(SIGALRM, __sig_handler);
+}
+
+
+void __sig_handler(int sig)
+{
+
+    if ( sig == SIGINT ) {
+        signal(SIGINT, __sig_handler); /* reset it to this function */
+        Info("mock_TR181_client SIGINT received!\n");
+        _exit_process_(sig);
+    }
+    else if ( sig == SIGUSR1 ) {
+        signal(SIGUSR1, __sig_handler); /* reset it to this function */
+        Info("WEBPA SIGUSR1 received!\n");
+    }
+    else if ( sig == SIGUSR2 ) {
+        Info("mock_TR181_client SIGUSR2 received!\n");
+    }
+    else if ( sig == SIGCHLD ) {
+        signal(SIGCHLD, __sig_handler); /* reset it to this function */
+        Info("mock_TR181_client SIGHLD received!\n");
+    }
+    else if ( sig == SIGPIPE ) {
+        signal(SIGPIPE, __sig_handler); /* reset it to this function */
+        Info("mock_TR181_client SIGPIPE received!\n");
+    }
+    else if ( sig == SIGALRM ) {
+        signal(SIGALRM, __sig_handler); /* reset it to this function */
+        Info("mock_TR181_client SIGALRM received!\n");
+    }
+    else if( sig == SIGTERM ) {
+        Info("mock_TR181_client SIGTERM received!\n");
+        _exit_process_(sig);
+    } else if ( sig == SIGABRT ) {
+         Info("mock_TR181_client SIGABRT received!\n");
+        _exit_process_(sig);       
+    }
+    else {
+        Info("mock_TR181_client Signal %d received!\n", sig);
+        _exit_process_(sig);
+    }
+}
+
+void _exit_process_(int signum)
+{
+  char *s = strsignal(signum);
+  Info("mock_TR181_client ready to exit! SIGNAL %d [%s]\n", signum, s ? s : "unknown signal");
+  terminate_mock_TR181_client = true;
+  sleep(1);
+  signal(signum, SIG_DFL);
+  kill(getpid(), signum);
+}
+

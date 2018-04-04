@@ -22,16 +22,42 @@
 #include <stdbool.h>
 
 #include "../src/mock_tr181_client.h"
+#include "../src/mock_tr181_adapter.h"
 
-void test_1()
+static char *request = "{ \"names\":[\"Device.DNS.Client.Enable\",\"Device.DNS.Client.\"],\"command\": \"GET\"}";
+static char *invalid_request = "{ \"names\":[\"Device.DNSZZ.Client.Enable\",\"Device.DNS.Client.\"],\"command\": \"GET\"}";
+
+
+void test_init(void)
 {
-    CU_ASSERT_EQUAL( true, true );
+    // Implement me?    
+}
+
+
+void test_large_db()
+{
+    char *response = NULL;
+    cJSON *cached_db = NULL;
+    
+    int delay = 0;
+    cached_db = mock_tr181_db_init(NULL);
+    CU_ASSERT(cached_db != NULL);   
+ 
+    processRequest(request, &response, &delay);
+    printf("response: %s\n", response);
+    CU_ASSERT(response != NULL);
+    free(response);
+    processRequest(invalid_request, &response, &delay);
+    printf("response: %s\n", response);
+    CU_ASSERT(response != NULL);   
+    free(response);
+    cJSON_Delete(cached_db);
 }
 
 void add_suites( CU_pSuite *suite )
 {
     *suite = CU_add_suite( "mock_tr181 encoding tests", NULL, NULL );
-    CU_add_test( *suite, "Test 1", test_1 );
+    CU_add_test( *suite, "test_large_db", test_large_db );
 }
 
 /*----------------------------------------------------------------------------*/
@@ -46,6 +72,7 @@ int main( void )
         add_suites( &suite );
 
         if( NULL != suite ) {
+            test_init();
             CU_basic_set_mode( CU_BRM_VERBOSE );
             CU_basic_run_tests();
             printf( "\n" );

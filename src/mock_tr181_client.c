@@ -53,6 +53,8 @@ static void free_param_t_list(struct param_t_list* pList)
 	{
 		struct param_t_list* tmp = pList;
 		pList = pList->next;
+        if(tmp->p.name) {free(tmp->p.name);}
+        if(tmp->p.value) {free(tmp->p.value);}
 		free(tmp);
 	}
 }
@@ -67,8 +69,13 @@ const char *rdk_logger_module_fetch(void)
 	return "LOG.RDK.MOCK_TR181";
 }
 
-void connect_parodus_default()
+void connect_parodus_default(bool bypass)
 {
+    if (bypass) {
+        Info("Unit tests ignoring parodus connections ...\n");
+        return;
+    }
+
 	Info("Using default values for Parodus PORT and Client Port.\n");
 
 	libpd_cfg_t cfg = {
@@ -104,7 +111,7 @@ void connect_parodus(char* parodus_port, char* client_port)
 {
 	if(parodus_port == NULL &&  client_port == NULL)
 	{
-		return connect_parodus_default();
+		return connect_parodus_default(false);
 	}
 
 	char str_parodus_url[128] = {};
@@ -730,7 +737,8 @@ static void processSETRequest(cJSON *jCache, req_struct *reqObj, res_struct *res
 	return;
 }
 
-static void processRequest(char *reqPayload, char **resPayload, int* resDelay)
+
+void processRequest(char *reqPayload, char **resPayload, int* resDelay)
 {
 	req_struct *reqObj = NULL;
 	res_struct *resObj = NULL;
@@ -919,6 +927,7 @@ static void processRequest(char *reqPayload, char **resPayload, int* resDelay)
 
 	return;
 }
+
 
 /*----------------------------------------------------------------------------*/
 /*                             Function Callback                              */
