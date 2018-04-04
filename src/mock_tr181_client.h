@@ -68,8 +68,9 @@ void startParodusReceiveThread();
 /* none */
 
 /*----------------------------------------------------------------------------*/
-/*                             Internal functions                             */
+/*                             Internal Private functions                     */
 /*----------------------------------------------------------------------------*/
-/* none */
+void processRequest(char *reqPayload, char **resPayload, int* resDelay);
+
 
 #endif /* __MOCK_TR181_CLIENT_H__ */

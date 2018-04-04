@@ -39,14 +39,14 @@ static cJSON* g_mock_tr181_db_cache = NULL;
 /*                 External interface functions                               */
 /*----------------------------------------------------------------------------*/
 /*
- * returns 0 - failure
- *         1 - success
+ * returns NULL - failure
+ *         Address of cached db - success
  *
  * Init will set the db file name
  *
  */
 
-int mock_tr181_db_init(char* db_name)
+cJSON *mock_tr181_db_init(char* db_name)
 {
 	if(g_mock_tr181_db_name)
 	{
@@ -72,7 +72,7 @@ int mock_tr181_db_init(char* db_name)
         g_mock_tr181_db_cache = cJSON_Parse((char *) &mock_tr181_json[0]);
 	}
 
-	return 1;
+	return g_mock_tr181_db_cache;
 }
 
 cJSON* mock_tr181_db_get_instance()

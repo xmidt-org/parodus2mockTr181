@@ -53,6 +53,8 @@ static void free_param_t_list(struct param_t_list* pList)
 	{
 		struct param_t_list* tmp = pList;
 		pList = pList->next;
+        if(tmp->p.name) {free(tmp->p.name);}
+        if(tmp->p.value) {free(tmp->p.value);}
 		free(tmp);
 	}
 }
@@ -736,8 +738,7 @@ static void processSETRequest(cJSON *jCache, req_struct *reqObj, res_struct *res
 }
 
 
-
-static void processRequest(char *reqPayload, char **resPayload, int* resDelay)
+void processRequest(char *reqPayload, char **resPayload, int* resDelay)
 {
 	req_struct *reqObj = NULL;
 	res_struct *resObj = NULL;

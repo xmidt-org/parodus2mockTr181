@@ -25,7 +25,7 @@
 /*----------------------------------------------------------------------------*/
 cJSON* mock_tr181_db_get_instance();
 
-int mock_tr181_db_init(char* db_name);
+cJSON *mock_tr181_db_init(char* db_name);
 
 int mock_tr181_db_read(char **data);
 
