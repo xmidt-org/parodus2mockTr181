@@ -62,6 +62,10 @@ int main( int argc, char **argv)
 				break;
 			case 'd':
 				Info("Option d read\n");
+                /* Note: Specifying "null" or "/dev/null" will override the make
+                   built-in data-base file, so we start with an empty db
+                   If this option is not used, or the file is not found then the
+                   internal db is used. */
 				mock_tr181_db_init(optarg);
 				break;
 			case 'h':

@@ -64,7 +64,11 @@ cJSON *mock_tr181_db_init(char* db_name)
 	if(db_name)
 	{
 		Info("MockTR181 DB file: \"%s\"\n", db_name);
-		g_mock_tr181_db_name = strdup(db_name);
+        if (0 == strcmp("null", db_name) || 0 == strcmp("/dev/null", db_name)) {
+            Info("Starting with an empty data base\n");
+        } else {
+            g_mock_tr181_db_name = strdup(db_name);
+          }
 	}
 	else
 	{
