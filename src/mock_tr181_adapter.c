@@ -21,11 +21,7 @@
 /*----------------------------------------------------------------------------*/
 /*                                   Macros                                   */
 /*----------------------------------------------------------------------------*/
-#define P2M_DB_FILE      "../../mock_tr181.json"
 
-/* Declares unsigned char mock_tr181_json[] created from mock_tr181.json
- via xxd in the make file.
- */
 #include "mock_tr181_json.h"
 
 static char* g_mock_tr181_db_name = NULL;
@@ -73,7 +69,7 @@ cJSON *mock_tr181_db_init(char* db_name)
 	else
 	{
         // Using built-in data base file
-        g_mock_tr181_db_cache = cJSON_Parse((char *) &mock_tr181_json[0]);
+        g_mock_tr181_db_cache = cJSON_Parse((char *) &mock_tr181_db_json[0]);
 	}
 
 	return g_mock_tr181_db_cache;
