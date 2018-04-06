@@ -7339,7 +7339,7 @@
     {
         "name": "Device.DNS.Client.Server.1.DNSServer",
         "value": "75.75.75.75",
-        "delay" : 2
+        "delay" : 2,
         "access": "rw",
         "type": 0
     },

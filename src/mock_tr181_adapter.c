@@ -68,7 +68,7 @@ cJSON *mock_tr181_db_init(char* db_name)
 	else
 	{
         // Using built-in data base file
-        g_mock_tr181_db_cache = cJSON_Parse((char *) &mock_tr181_db_json[0]);
+        g_mock_tr181_db_cache = cJSON_Parse((char *) mock_tr181_db_json);
 	}
 
 	return g_mock_tr181_db_cache;

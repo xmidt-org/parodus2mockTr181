@@ -43,8 +43,14 @@ void test_large_db()
     char *response = NULL;
     cJSON *cached_db = NULL;
     int delay = 0;
-  
+    int cnt;
+    char *cJSON_Error = NULL;
+
     cached_db = mock_tr181_db_init(NULL);
+    cJSON_Error = (char *) cJSON_GetErrorPtr();
+    if (NULL == cached_db) {
+        printf("\n\n\ncJSON_Error %s\n\n\n", cJSON_Error);
+    }
     CU_ASSERT(cached_db != NULL);   
 
     processRequest(request, &response, &delay);
