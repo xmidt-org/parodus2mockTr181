@@ -18,8 +18,13 @@ set(SOURCES mock_tr181_adapter.c mock_tr181_client.c mock_tr181_main.c)
 
 add_executable(${PROJ_MOCK_TR181} ${SOURCES})
 
-## Hint: To use the small DB : cmake -D SMALL_JSON_DB=ON ..
-option(SMALL_JSON_DB "SMALL_JSON_DB")
+## Hint: To use the small DB : cmake --clear-cmake-cache -D SMALL_JSON_DB=1 ..
+# Have to clear cmake cache, otherwise it kind of doesn't work ;-(
+
+option(SMALL_JSON_DB "SMALL_JSON_DB" 0)
+
+execute_process(COMMAND rm mock_tr181_json.h
+                WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/src)
 
 if (SMALL_JSON_DB)
 
