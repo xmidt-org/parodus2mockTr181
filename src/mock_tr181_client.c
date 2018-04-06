@@ -821,22 +821,25 @@ void processRequest(char *reqPayload, char **resPayload, int* resDelay)
 				for (j = 0; j < count; j++)
 				{
 					obj = cJSON_GetArrayItem(paramList, j);
-					if ((strcmp(reqObj->u.getReq->paramNames[i], cJSON_GetObjectItem(obj, "name")->valuestring) == 0) && (cJSON_GetObjectItem(obj, "notify") != NULL))
+					if ((strcmp(reqObj->u.getReq->paramNames[i], cJSON_GetObjectItem(obj, "name")->valuestring) == 0))
 					{
-						resObj->u.paramRes->params[i].name = (char*) malloc(sizeof(char) * 100);
-						resObj->u.paramRes->params[i].value = (char*) malloc(sizeof(char) * 100);
+                        if ((cJSON_GetObjectItem(obj, "notify") != NULL))
+                        {
+                            resObj->u.paramRes->params[i].name = (char*) malloc(sizeof(char) * 100);
+                            resObj->u.paramRes->params[i].value = (char*) malloc(sizeof(char) * 100);
 
-						strcpy(resObj->u.paramRes->params[i].name, cJSON_GetObjectItem(obj, "name")->valuestring);
-						Print("Response:> params[%d].name = %s\n", i, resObj->u.paramRes->params[i].name);
+                            strcpy(resObj->u.paramRes->params[i].name, cJSON_GetObjectItem(obj, "name")->valuestring);
+                            Print("Response:> params[%d].name = %s\n", i, resObj->u.paramRes->params[i].name);
 
-						strcpy(resObj->u.paramRes->params[i].value, cJSON_GetObjectItem(obj, "notify")->valuestring);
-						Print("Response:> params[%d].value = %s\n", i, resObj->u.paramRes->params[i].value);
+                            strcpy(resObj->u.paramRes->params[i].value, cJSON_GetObjectItem(obj, "notify")->valuestring);
+                            Print("Response:> params[%d].value = %s\n", i, resObj->u.paramRes->params[i].value);
 
-						resObj->u.paramRes->params[i].type = WDMP_INT;
-						Print("Response:> params[%d].type = %d\n", i, resObj->u.paramRes->params[i].type);
+                            resObj->u.paramRes->params[i].type = WDMP_INT;
+                            Print("Response:> params[%d].type = %d\n", i, resObj->u.paramRes->params[i].type);
 
-						matchFlag = 1;
-						break;
+                            matchFlag = 1;
+                            break;
+                        }
 					}
 					else
 					{

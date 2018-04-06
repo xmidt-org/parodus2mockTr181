@@ -27,6 +27,11 @@
 static char *request = "{ \"names\":[\"Device.DNS.Client.Enable\",\"Device.DNS.Client.\"],\"command\": \"GET\"}";
 static char *invalid_request = "{ \"names\":[\"Device.DNSZZ.Client.Enable\",\"Device.DNS.Client.\"],\"command\": \"GET\"}";
 
+static char *attributes[] = {
+    "{\"names\":[\"Device.Bridging.Bridge.8.Port.2.LowerLayers\",\"Device.Bridging.Bridge.8.Port.2.ManagementPort\"],\"attributes\":\"notify\",\"command\": \"GET_ATTRIBUTES\"}",
+    "{\"names\":[\"Device.WiFi.SSID.1.Enable\",\"Device.WiFi.SSID.1.SSID\"],\"attributes\":\"notify\",\"command\": \"GET_ATTRIBUTES\"}",
+    "{\"names\":[\"Device.Ethernet.Link.2.LastChange\",\"Device.Ethernet.Link.2\"],\"attributes\":\"notify\",\"command\": \"GET_ATTRIBUTES\"}",
+ };
 
 void test_init(void)
 {
@@ -38,19 +43,31 @@ void test_large_db()
 {
     char *response = NULL;
     cJSON *cached_db = NULL;
+    int cnt;
     
     int delay = 0;
     cached_db = mock_tr181_db_init(NULL);
     CU_ASSERT(cached_db != NULL);   
- 
+
     processRequest(request, &response, &delay);
     printf("response: %s\n", response);
     CU_ASSERT(response != NULL);
     free(response);
+    printf("\n**********************\nReturned Delay Value:%d\n**********************\n", delay);
+ 
     processRequest(invalid_request, &response, &delay);
     printf("response: %s\n", response);
     CU_ASSERT(response != NULL);   
     free(response);
+    printf("\n**********************\nReturned Delay Value:%d\n**********************\n", delay);
+
+    for (cnt = 0; cnt < 3;cnt++) {
+        processRequest(attributes[cnt], &response, &delay);
+        printf("response: %s\n", response);
+        CU_ASSERT(response != NULL);   
+        free(response);
+    }
+    
     cJSON_Delete(cached_db);
 }
 

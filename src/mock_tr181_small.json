@@ -164,19 +164,19 @@
     {
         "name": "Device.Ethernet.Link.2.Alias",
         "value": "Home Security",
-        "access": "rw",
+        "access": "r",
         "type": 0
     },
     {
         "name": "Device.Ethernet.Link.2.Name",
         "value": "brlan1",
-        "access": "rw",
+        "access": "w",
         "type": 0
     },
     {
         "name": "Device.Ethernet.Link.2.LastChange",
         "value": "3966136998",
-        "access": "rw",
+        "access": "r",
         "type": 2
     },
     {
