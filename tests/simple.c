@@ -38,14 +38,12 @@ void test_init(void)
     // Implement me?    
 }
 
-
 void test_large_db()
 {
     char *response = NULL;
     cJSON *cached_db = NULL;
-    int cnt;
-    
     int delay = 0;
+  
     cached_db = mock_tr181_db_init(NULL);
     CU_ASSERT(cached_db != NULL);   
 
@@ -54,7 +52,6 @@ void test_large_db()
     CU_ASSERT(response != NULL);
     free(response);
     printf("\n**********************\nReturned Delay Value:%d\n**********************\n", delay);
- 
     processRequest(invalid_request, &response, &delay);
     printf("response: %s\n", response);
     CU_ASSERT(response != NULL);   
@@ -67,7 +64,7 @@ void test_large_db()
         CU_ASSERT(response != NULL);   
         free(response);
     }
-    
+
     cJSON_Delete(cached_db);
 }
 
