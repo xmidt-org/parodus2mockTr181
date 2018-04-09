@@ -24,13 +24,19 @@
 #include "../src/mock_tr181_client.h"
 #include "../src/mock_tr181_adapter.h"
 
-static char *request = "{ \"names\":[\"Device.DNS.Client.Enable\",\"Device.DNS.Client.\"],\"command\": \"GET\"}";
-static char *invalid_request = "{ \"names\":[\"Device.DNSZZ.Client.Enable\",\"Device.DNS.Client.\"],\"command\": \"GET\"}";
+static char *request = "{ \"names\":[\"Device.DNS.Client.Enable\",\
+\"Device.DNS.Client.\"],\"command\": \"GET\"}";
+static char *invalid_request = "{ \"names\":[\"Device.DNSZZ.Client.Enable\",\
+\"Device.DNS.Client.\"],\"command\": \"GET\"}";
 
 static char *attributes[] = {
-    "{\"names\":[\"Device.Bridging.Bridge.8.Port.2.LowerLayers\",\"Device.Bridging.Bridge.8.Port.2.ManagementPort\"],\"attributes\":\"notify\",\"command\": \"GET_ATTRIBUTES\"}",
-    "{\"names\":[\"Device.WiFi.SSID.1.Enable\",\"Device.WiFi.SSID.1.SSID\"],\"attributes\":\"notify\",\"command\": \"GET_ATTRIBUTES\"}",
-    "{\"names\":[\"Device.Ethernet.Link.2.LastChange\",\"Device.Ethernet.Link.2\"],\"attributes\":\"notify\",\"command\": \"GET_ATTRIBUTES\"}",
+"{\"names\":[\"Device.Bridging.Bridge.8.Port.2.LowerLayers\",\
+\"Device.Bridging.Bridge.8.Port.2.ManagementPort\"],\"attributes\":\"notify\",\
+\"command\": \"GET_ATTRIBUTES\"}",
+"{\"names\":[\"Device.WiFi.SSID.1.Enable\",\"Device.WiFi.SSID.1.SSID\"],\
+\"attributes\":\"notify\",\"command\": \"GET_ATTRIBUTES\"}",\
+"{\"names\":[\"Device.Ethernet.Link.2.LastChange\",\"Device.Ethernet.Link.2\"],\
+\"attributes\":\"notify\",\"command\": \"GET_ATTRIBUTES\"}",
  };
 
 static char  *set_request= "{\"parameters\":[{\"name\":\"Device.DeviceInfo.ProductClass\",\
