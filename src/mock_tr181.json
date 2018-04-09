@@ -6309,13 +6309,13 @@
     {
         "name": "Device.DeviceInfo.HardwareVersion",
         "value": "11.0",
-        "access": "rw",
+        "access": "r",
         "type": 0
     },
     {
         "name": "Device.DeviceInfo.SoftwareVersion",
         "value": "TG1682_DEV_master_20180227232425sdy_NG",
-        "access": "rw",
+        "access": "r",
         "type": 0
     },
     {

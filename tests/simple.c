@@ -44,6 +44,11 @@ static char  *set_request= "{\"parameters\":[{\"name\":\"Device.DeviceInfo.Produ
 \"Device.DeviceInfo.SerialNumber\",\"value\":\"14cfe2142142\",\"dataType\":0,\
 \"attributes\": { \"notify\": 1}}],\"command\":\"SET\"}";
 
+static char  *set_request_read_only = "{\"parameters\":[{\"name\":\"Device.DeviceInfo.HardwareVersion\",\
+\"value\":\"11.0\",\"dataType\":0,\"attributes\": { \"notify\": 1}},{\"name\":\
+\"Device.DeviceInfo.SoftwareVersion\",\"value\":\"TG1682_DEV_master_20180227232425sdy_NG\",\"dataType\":0,\
+\"attributes\": { \"notify\": 1}}],\"command\":\"SET\"}";
+
 
 void test_init(void)
 {
@@ -75,12 +80,8 @@ void test_large_db()
     CU_ASSERT(response != NULL);   
     free(response);
     printf("\n**********************\nReturned Delay Value:%d\n**********************\n", delay);
-    
-    processRequest(set_request, &response, &delay);
-    printf("response: %s\n", response);
-    CU_ASSERT(response != NULL);   
-    free(response);
-    
+
+ 
     for (cnt = 0; cnt < 3;cnt++) {
         processRequest(attributes[cnt], &response, &delay);
         printf("response: %s\n", response);
@@ -88,6 +89,18 @@ void test_large_db()
         free(response);
     }
 
+     
+    processRequest(set_request, &response, &delay);
+    printf("response: %s\n", response);
+    CU_ASSERT(response != NULL);   
+    free(response);
+    
+    printf("\n**********************\nSET on read_only value\n**********************\n");
+    processRequest(set_request_read_only, &response, &delay);
+    printf("response: %s\n", response);
+    CU_ASSERT(response != NULL);   
+    free(response);        
+    
     cJSON_Delete(cached_db);
 }
 
