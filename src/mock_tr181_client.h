@@ -44,6 +44,8 @@
 #define Info(...)       cimplog_info(LOGGING_MODULE, __VA_ARGS__)
 #define Print(...)      cimplog_debug(LOGGING_MODULE, __VA_ARGS__)
 
+#define SUPPORT_GET_SET_ATTRIBUTES
+
 /*----------------------------------------------------------------------------*/
 /*                               Data Structures                              */
 /*----------------------------------------------------------------------------*/

@@ -33,6 +33,12 @@ static char *attributes[] = {
     "{\"names\":[\"Device.Ethernet.Link.2.LastChange\",\"Device.Ethernet.Link.2\"],\"attributes\":\"notify\",\"command\": \"GET_ATTRIBUTES\"}",
  };
 
+static char  *set_request= "{\"parameters\":[{\"name\":\"Device.DeviceInfo.ProductClass\",\
+\"value\":\"XB3\",\"dataType\":0,\"attributes\": { \"notify\": 1}},{\"name\":\
+\"Device.DeviceInfo.SerialNumber\",\"value\":\"14cfe2142142\",\"dataType\":0,\
+\"attributes\": { \"notify\": 1}}],\"command\":\"SET\"}";
+
+
 void test_init(void)
 {
     // Implement me?    
@@ -63,7 +69,12 @@ void test_large_db()
     CU_ASSERT(response != NULL);   
     free(response);
     printf("\n**********************\nReturned Delay Value:%d\n**********************\n", delay);
-
+    
+    processRequest(set_request, &response, &delay);
+    printf("response: %s\n", response);
+    CU_ASSERT(response != NULL);   
+    free(response);
+    
     for (cnt = 0; cnt < 3;cnt++) {
         processRequest(attributes[cnt], &response, &delay);
         printf("response: %s\n", response);
