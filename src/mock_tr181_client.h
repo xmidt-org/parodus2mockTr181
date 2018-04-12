@@ -44,6 +44,9 @@
 #define Info(...)       cimplog_info(LOGGING_MODULE, __VA_ARGS__)
 #define Print(...)      cimplog_debug(LOGGING_MODULE, __VA_ARGS__)
 
+// Default to not doing get/set attributes.
+//#define SUPPORT_GET_SET_ATTRIBUTES
+
 /*----------------------------------------------------------------------------*/
 /*                               Data Structures                              */
 /*----------------------------------------------------------------------------*/

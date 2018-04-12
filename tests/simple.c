@@ -24,8 +24,30 @@
 #include "../src/mock_tr181_client.h"
 #include "../src/mock_tr181_adapter.h"
 
-static char *request = "{ \"names\":[\"Device.DNS.Client.Enable\",\"Device.DNS.Client.\"],\"command\": \"GET\"}";
-static char *invalid_request = "{ \"names\":[\"Device.DNSZZ.Client.Enable\",\"Device.DNS.Client.\"],\"command\": \"GET\"}";
+static char *request = "{ \"names\":[\"Device.DNS.Client.Enable\",\
+\"Device.DNS.Client.\"],\"command\": \"GET\"}";
+static char *invalid_request = "{ \"names\":[\"Device.DNSZZ.Client.Enable\",\
+\"Device.DNS.Client.\"],\"command\": \"GET\"}";
+
+static char *attributes[] = {
+"{\"names\":[\"Device.Bridging.Bridge.8.Port.2.LowerLayers\",\
+\"Device.Bridging.Bridge.8.Port.2.ManagementPort\"],\"attributes\":\"notify\",\
+\"command\": \"GET_ATTRIBUTES\"}",
+"{\"names\":[\"Device.WiFi.SSID.1.Enable\",\"Device.WiFi.SSID.1.SSID\"],\
+\"attributes\":\"notify\",\"command\": \"GET_ATTRIBUTES\"}",\
+"{\"names\":[\"Device.Ethernet.Link.2.LastChange\",\"Device.Ethernet.Link.2\"],\
+\"attributes\":\"notify\",\"command\": \"GET_ATTRIBUTES\"}",
+ };
+
+static char  *set_request= "{\"parameters\":[{\"name\":\"Device.DeviceInfo.ProductClass\",\
+\"value\":\"XB3\",\"dataType\":0,\"attributes\": { \"notify\": 1}},{\"name\":\
+\"Device.DeviceInfo.SerialNumber\",\"value\":\"14cfe2142142\",\"dataType\":0,\
+\"attributes\": { \"notify\": 1}}],\"command\":\"SET\"}";
+
+static char  *set_request_read_only = "{\"parameters\":[{\"name\":\"Device.DeviceInfo.HardwareVersion\",\
+\"value\":\"11.0\",\"dataType\":0,\"attributes\": { \"notify\": 1}},{\"name\":\
+\"Device.DeviceInfo.SoftwareVersion\",\"value\":\"TG1682_DEV_master_20180227232425sdy_NG\",\"dataType\":0,\
+\"attributes\": { \"notify\": 1}}],\"command\":\"SET\"}";
 
 
 void test_init(void)
@@ -33,24 +55,52 @@ void test_init(void)
     // Implement me?    
 }
 
-
 void test_large_db()
 {
     char *response = NULL;
     cJSON *cached_db = NULL;
-    
     int delay = 0;
+    int cnt;
+    char *cJSON_Error = NULL;
+
     cached_db = mock_tr181_db_init(NULL);
+    cJSON_Error = (char *) cJSON_GetErrorPtr();
+    if (NULL == cached_db) {
+        printf("\n\n\ncJSON_Error %s\n\n\n", cJSON_Error);
+    }
     CU_ASSERT(cached_db != NULL);   
- 
+
     processRequest(request, &response, &delay);
     printf("response: %s\n", response);
     CU_ASSERT(response != NULL);
     free(response);
+    printf("\n**********************\nReturned Delay Value:%d\n**********************\n", delay);
     processRequest(invalid_request, &response, &delay);
     printf("response: %s\n", response);
     CU_ASSERT(response != NULL);   
     free(response);
+    printf("\n**********************\nReturned Delay Value:%d\n**********************\n", delay);
+
+ 
+    for (cnt = 0; cnt < 3;cnt++) {
+        processRequest(attributes[cnt], &response, &delay);
+        printf("response: %s\n", response);
+        CU_ASSERT(response != NULL);   
+        free(response);
+    }
+
+     
+    processRequest(set_request, &response, &delay);
+    printf("response: %s\n", response);
+    CU_ASSERT(response != NULL);   
+    free(response);
+    
+    printf("\n**********************\nSET on read_only value\n**********************\n");
+    processRequest(set_request_read_only, &response, &delay);
+    printf("response: %s\n", response);
+    CU_ASSERT(response != NULL);   
+    free(response);        
+    
     cJSON_Delete(cached_db);
 }
 

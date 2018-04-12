@@ -5774,11 +5774,16 @@
         "name": "Device.Bridging.Bridge.8.Port.2.LowerLayers",
         "value": "Device.WiFi.SSID.10105",
         "access": "r",
+        "notify" : "true",
+        "delay" : 7,
         "type": 0
     },
     {
         "name": "Device.Bridging.Bridge.8.Port.2.ManagementPort",
         "value": "false",
+        "access": "rw",
+        "notify" : "true",
+        "delay" : 7,
         "type": 3
     },
     {
@@ -6304,13 +6309,13 @@
     {
         "name": "Device.DeviceInfo.HardwareVersion",
         "value": "11.0",
-        "access": "rw",
+        "access": "r",
         "type": 0
     },
     {
         "name": "Device.DeviceInfo.SoftwareVersion",
         "value": "TG1682_DEV_master_20180227232425sdy_NG",
-        "access": "rw",
+        "access": "r",
         "type": 0
     },
     {
@@ -7295,6 +7300,7 @@
         "name": "Device.DNS.Client.Enable",
         "value": "true",
         "access": "rw",
+        "delay" : 2,
         "type": 3
     },
     {
@@ -7307,6 +7313,7 @@
         "name": "Device.DNS.Client.ServerNumberOfEntries",
         "value": "6",
         "access": "rw",
+        "delay" : 2,
         "type": 2
     },
     {
@@ -7318,18 +7325,21 @@
     {
         "name": "Device.DNS.Client.Server.1.Status",
         "value": "",
+        "delay" : 2,
         "access": "rw",
         "type": 0
     },
     {
         "name": "Device.DNS.Client.Server.1.Alias",
         "value": "",
+        "delay" : 2,
         "access": "rw",
         "type": 0
     },
     {
         "name": "Device.DNS.Client.Server.1.DNSServer",
         "value": "75.75.75.75",
+        "delay" : 2,
         "access": "rw",
         "type": 0
     },
