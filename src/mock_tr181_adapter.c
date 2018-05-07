@@ -21,8 +21,6 @@
 /*----------------------------------------------------------------------------*/
 /*                                   Macros                                   */
 /*----------------------------------------------------------------------------*/
-#include "mock_tr181_json.h"
-
 static char* g_mock_tr181_db_name = NULL;
 
 //cache data instead of reading every time from filesystem
@@ -64,11 +62,6 @@ cJSON *mock_tr181_db_init(char* db_name)
         } else {
             g_mock_tr181_db_name = strdup(db_name);
           }
-	}
-	else
-	{
-        // Using built-in data base file
-        g_mock_tr181_db_cache = cJSON_Parse((char *) mock_tr181_db_json);
 	}
 
 	return g_mock_tr181_db_cache;
