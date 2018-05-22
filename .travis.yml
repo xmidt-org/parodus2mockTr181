@@ -1,13 +1,39 @@
 language: c
+
+os:
+    - linux
+
+matrix:
+    include:
+        - os: linux
+          dist: trusty
+          sudo: required
+
 compiler:
     - gcc
 
-before_install:
-    - sudo pip install codecov
+env:
+  global:
+   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+   #   via the "travis encrypt" command using the project repo's public key
+   - secure: "invalid"
 
-install:
-    - sudo apt-get update -qq
-    - sudo apt-get install -y -qq libcunit1 libcunit1-dev lcov libcurl4-openssl-dev
+addons:
+  coverity_scan:
+    project:
+      name: "Comcast/parodus2mockTr181"
+      description: "A mock implementation of TR-181 objects through Parodus"
+    notification_email: weston_schmidt@alumni.purdue.edu
+    build_command_prepend: "mkdir coverity_build && cd coverity_build && cmake .."
+    build_command:   "make"
+    branch_pattern: disable_master
+
+before_install:
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo pip install codecov; fi
+    - if [[ "$TRAVIS_OS_NAME" == "osx"   ]]; then brew install cunit valgrind; fi
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update -qq; fi
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -y -qq libcunit1 libcunit1-dev lcov valgrind; fi
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca- ; fi
 
 script:
     - mkdir build
@@ -15,7 +41,6 @@ script:
     - cmake ..
     - make
     - make test
-    - make coverage
 
 after_success:
-    - codecov
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then codecov; fi
