@@ -2,6 +2,11 @@
 
 Simple interface provide a mock TR-181 object model
 
+[![Build Status](https://travis-ci.org/Comcast/parodus2mockTr181.svg?branch=master)](https://travis-ci.org/Comcast/parodus2mockTr181)
+[![codecov.io](http://codecov.io/github/Comcast/parodus2mockTr181/coverage.svg?branch=master)](http://codecov.io/github/Comcast/parodus2mockTr181?branch=master)
+[![Coverity](https://img.shields.io/coverity/scan/invalid.svg)]("https://scan.coverity.com/projects/comcast-parodus2mockTr181)
+[![Apache V2 License](http://img.shields.io/badge/license-Apache%20V2-blue.svg)](https://github.com/Comcast/parodus2mockTr181/blob/master/LICENSE.txt)
+
 # Building and Testing Instructions
 
 ```
