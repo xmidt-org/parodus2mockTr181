@@ -107,7 +107,7 @@ void test_large_db()
 void add_suites( CU_pSuite *suite )
 {
     *suite = CU_add_suite( "mock_tr181 encoding tests", NULL, NULL );
-    CU_add_test( *suite, "test_large_db", test_large_db );
+    // CU_add_test( *suite, "test_large_db", test_large_db );
 }
 
 /*----------------------------------------------------------------------------*/
