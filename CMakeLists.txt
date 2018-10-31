@@ -76,6 +76,17 @@ ExternalProject_Add(nanomsg
 add_library(libnanomsg STATIC SHARED IMPORTED)
 add_dependencies(libnanomsg nanomsg)
 
+# nanoMsg external dependency
+#-------------------------------------------------------------------------------
+ExternalProject_Add(nng
+    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/_prefix/nng
+    GIT_REPOSITORY https://github.com/nanomsg/nng.git
+    #GIT_TAG "096998834451219ee7813d8977f6a4027b0ccb43"
+    CMAKE_ARGS += -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR}
+)
+add_library(libnng STATIC SHARED IMPORTED)
+add_dependencies(libnng nng)
+
 # cJSON external dependency
 #-------------------------------------------------------------------------------
 ExternalProject_Add(cJSON
@@ -147,7 +158,7 @@ add_dependencies(libwdmp-c wdmp-c)
 # libparodus external dependency
 #-------------------------------------------------------------------------------
 ExternalProject_Add(libparodus
-    DEPENDS trower-base64 msgpack nanomsg wrp-c
+    DEPENDS trower-base64 msgpack nanomsg nng wrp-c
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/_prefix/libparodus
     GIT_REPOSITORY https://github.com/Comcast/libparodus.git
     #    GIT_TAG "7de6c7c43f8d773713aad6f0c5b4e5a8d2809b1a"
