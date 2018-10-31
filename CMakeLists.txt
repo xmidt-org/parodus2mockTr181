@@ -76,7 +76,7 @@ ExternalProject_Add(nanomsg
 add_library(libnanomsg STATIC SHARED IMPORTED)
 add_dependencies(libnanomsg nanomsg)
 
-# nanoMsg external dependency
+# nng external dependency
 #-------------------------------------------------------------------------------
 ExternalProject_Add(nng
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/_prefix/nng
