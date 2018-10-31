@@ -37,6 +37,7 @@ target_link_libraries (simple  gcov  cunit
                        -lcimplog
                        -llibparodus
                        -lnanomsg
+                       -lnng
                        -lcjson
                        -lpthread
                        -lrt 
