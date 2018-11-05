@@ -22,8 +22,8 @@
 #include <stdint.h>
 
 #include "libparodus.h"
-#include <nanomsg/nn.h>
-#include <nanomsg/pipeline.h>
+#include <nng/compat/nanomsg/nn.h>
+#include <nng/compat/nanomsg/pipeline.h>
 #include <pthread.h>
 #include <stdlib.h>
 #include <errno.h>
