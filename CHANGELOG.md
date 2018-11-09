@@ -7,4 +7,5 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 - Switched from nanomsg (Release 1.1.2) to NNG (Release v1.0.1)
+- Reverted from NNG back to nanomsg
 

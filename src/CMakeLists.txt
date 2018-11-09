@@ -28,7 +28,7 @@ target_link_libraries (${PROJ_MOCK_TR181}
                        -lcimplog
                        -llibparodus
                        -lcjson
-                       -lnng
+                       -lnanomsg
                        -lpthread
                        -lrt
                        )
